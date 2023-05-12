@@ -14,7 +14,7 @@ def sampleCB(word = "glass", pool = "gonianless"):
 
     hints = defaultdict(defaultValue)
 
-    ai = Codebreaker(trie, pool, hints)
+    ai = Codebreaker(trie, pool)
     print("\n---STATS---\n")
     for i in range(6):
         
@@ -23,7 +23,6 @@ def sampleCB(word = "glass", pool = "gonianless"):
             if word[index] == candidate[index]:
                 hints[index] = word[index]
         
-        ai.attempts[candidate] = ai.candidates[candidate]
         ai.stats()
         ai.rethink(hints)
 

@@ -27,31 +27,31 @@ class Letter(pg.sprite.Sprite):
         letter_rect.centerx = self.rect.w//2
         letter_rect.centery = self.rect.h//2
         self.image.blit(letter, letter_rect)
-        
-    def update(self):
-        if self.clicked:
-            self.snap()
-
-            self.pos.x += self.move.x * self.transition_speed
-            self.pos.y += self.move.y * self.transition_speed
-            self.rect.topleft = round(self.pos.x), round(self.pos.y)
 
     def snap(self):
         dx = abs(self.target.x - self.rect.x)
         dy = abs(self.target.y - self.rect.y)
-        if  ( dx <= self.transition_speed + self.transition_snap and 
-                dy <= self.transition_speed + self.transition_snap):
+        if (dx <= self.transition_speed + self.transition_snap and 
+            dy <= self.transition_speed + self.transition_snap):
             self.rect.x, self.rect.y = self.target
             self.clicked = False
 
-    def emulated_click(self, target: vec2 = None):
-        if target and target != self.rect.topleft:
-            self.clicked = True
-            self.pos = vec2(self.rect.topleft)
-            self.move = vec2(target - self.pos).normalize()
-            self.target = target
+    def update(self):
+        if self.clicked:
             self.snap()
-            return self.clicked
+            if not self.clicked: return
+            self.pos.x += self.move.x * self.transition_speed
+            self.pos.y += self.move.y * self.transition_speed
+            self.rect.topleft = round(self.pos.x), round(self.pos.y)
+
+    def emulated_click(self, target: vec2 = None):
+        if target:
+            if target != self.rect.topleft:
+                self.clicked = True
+                self.pos = vec2(self.rect.topleft)
+                self.move = vec2(target - self.pos).normalize()
+                self.target = target
+                return self.clicked
 
     def click(self, clicked=False, target: vec2 = None):
         if target:   

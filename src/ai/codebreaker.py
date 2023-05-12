@@ -5,10 +5,10 @@ import random as rd
 
 class Codebreaker():
     
-    def __init__(self, trie: Trie, pool: str, hints: dict) -> None:
+    def __init__(self, trie: Trie, pool: str) -> None:
         self.trie = trie
         self.pool = [letter for letter in pool]
-        self.hints = hints
+        self.hints = defaultdict(defaultValue)
         self.pool_stack = []
         self.candidates = defaultdict(defaultValue)
         self.globalScore = 0
@@ -85,7 +85,9 @@ class Codebreaker():
 
     def think(self):
         self.search(self.trie.nodes)
-        return self.selectCandidate()
+        candidate = self.selectCandidate()
+        self.attempts[candidate] = self.candidates[candidate]
+        return candidate
 
     def rethink(self, hints = None):
         if hints is not None:

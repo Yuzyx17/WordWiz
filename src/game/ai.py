@@ -14,3 +14,13 @@ class AI():
     def as_mastermind(self, trie, pool):
         self.mastermind = Mastermind(trie, pool)
         self.role = False
+
+    def generateWord(self):
+        if self.role is not None:
+            if self.role:
+                return self.codebreaker.think()
+            elif not self.role:
+                return self.mastermind.generateWord()
+    
+    def update_codebreaker(self, hints):
+        self.codebreaker.rethink(hints)
