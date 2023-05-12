@@ -145,8 +145,23 @@ class Board():
         elif self.turn == Agents.AI and self.mode == Mode.MASTERMIND:
             self.ai.mastermind()
 
+
+        #TEMPORARY FEEDBACK
+        letter : Letter
         if self.state.verify_guess():
-            print(self.state.wordify_guess())
+            for letter in self.letter_used:
+                letter.fill = GREEN
+                letter.draw()
+        else:
+            for letter in self.letter_used:
+                letter.fill = RED
+                letter.draw()
+        
+        for letter in self.letter_pool:
+            if letter not in self.letter_used:
+                letter.fill = WHITE
+                letter.draw()
+
         self.update()
 
     def draw_board():

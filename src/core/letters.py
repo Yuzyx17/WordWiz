@@ -5,7 +5,7 @@ class Letter(pg.sprite.Sprite):
     def __init__(self, char=' ', index = 0, target:vec2 = (25, 25)):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface(tilesize)
-        self.image.fill(WHITE)
+        self.fill = WHITE
         self.rect = self.image.get_rect()
         self.rect.topleft = target
         self.letter = char
@@ -21,6 +21,7 @@ class Letter(pg.sprite.Sprite):
         self.draw()
     
     def draw(self):
+        self.image.fill(self.fill)
         letter = pixelfont.render(self.letter, True, BLACK)
         letter_rect = letter.get_rect()
         letter_rect.centerx = self.rect.w//2
