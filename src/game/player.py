@@ -25,7 +25,7 @@ class Player():
                     attempted_index = self.board.letter_pool.sprites().index(letter)
                     attempted_index = self.state.spell_guess(attempted_index, letter.letter)
                     self.board.letter_used.add(letter)   
-                    letter.translate(vec2(tilesize.x*attempted_index, 400))
+                    letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
                     self.board.click = False
                     break
 

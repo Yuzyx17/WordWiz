@@ -1,16 +1,20 @@
-from pygame import Font as ft
-from pygame import Vector2 as vec2
-from enum import Enum
 import pygame as pg
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-BLUE = (0, 255, 0)
-GREEN = (0, 0, 255)
-YELLOW = (255, 255, 0)
-PURPLE = (255, 0, 255)
-CYAN = (0, 255, 255)
+from pygame import Font as ft
+from pygame import Vector2 as vec2
+from pygame import Color
+from enum import Enum
+
+WHITE = Color(255, 255, 255)
+BLACK = Color(0, 0, 0)
+RED = Color(255, 0, 0)
+GREEN = Color(0, 255, 0)
+BLUE = Color(0, 0, 255)
+CYAN = BLUE + GREEN
+MAGENTA = RED + BLUE
+YELLOW = RED + GREEN
+
+OFFWHITE = Color(225, 200, 225)
 
 pg.font.init()
 

@@ -29,6 +29,7 @@ class BoardState():
         self.hints = defaultdict(defaultValue)
         self.trie = Trie()
         self.win = False
+        self.attempts = []
         self.attempt = 0 #row
         self.index = 0 #col
         
@@ -47,6 +48,7 @@ class BoardState():
         self.word = None
         self.hints = defaultdict(defaultValue)
         self.win = False
+        self.attempts = []
         self.attempt = 0 #row
         self.index = 0 #col
         
@@ -82,7 +84,14 @@ class BoardState():
         return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[self.attempt]])
 
     def accept_guess(self):
+        #check if already attempted
+        if self.wordify_guess() in self.attempts:
+            print(self.wordify_guess()) #try two words, it will appear
+        self.attempts.append(self.wordify_guess())
         #check win condition
+        for item in self.guesses[self.attempt]:
+            if item != ' ':
+                self.pool.update(item)
         if self.win:
             return
         #update hints
@@ -114,6 +123,7 @@ class Board():
         self.letter_used = pg.sprite.Group()
         self.word_guessed = pg.sprite.Group()
 
+    #for each round
     def update_pool(self, pool = None):
         if len(pool) != 10:
             return
@@ -121,6 +131,18 @@ class Board():
         self.letter_pool.empty()
         self.letter_used.empty()
         self.state.reset()
+
+        for i in range(10):
+            self.state.pool[i] = self.pool[i]
+            letter = Letter(self.state.pool[i])
+            letter.rect.x = i*tilesize.x
+            self.letter_pool.add(letter)
+
+    #for each turn
+    def reset_pool(self):
+        self.word_guessed.add(self.letter_used)
+        self.letter_pool.empty()
+        self.letter_used.empty()
 
         for i in range(10):
             self.state.pool[i] = self.pool[i]
@@ -164,7 +186,11 @@ class Board():
 
         self.update()
 
-    def draw_board():
+    def guess(self): #This is attached to the button in wordwiz.py as a callback
+        self.state.accept_guess()
+        self.reset_pool()
+
+    def draw_board(self):
         ...
 
     def update(self):

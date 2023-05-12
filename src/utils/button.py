@@ -9,13 +9,14 @@ class Button(pg.sprite.Sprite):
         self.callback = None
         self.list = None
         self.dict = None
+        self.returnValue = None
 
         self.click = False
     
     def update(self, click):
         self.click = click
         if self.click and self.rect.collidepoint(pg.mouse.get_pos()):
-            self.callback(*self.list, **self.dict)
+            self.returnValue = self.callback(*self.list, **self.dict)
 
         self.click = False
 

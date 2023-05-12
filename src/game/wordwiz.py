@@ -21,9 +21,9 @@ def init_game():
 
     #BUTTON SAMPLE
     button = Button(vec2(100, 50), (100, 150, 200))     #Creating Button
-    button.on_click(board.update_pool, "glassspade")    #Attaching callback board.updatepool with arg glassspade
-    button.list = ["helloworld"]                        #Changing args
-    button.rect.x, button.rect.y = vec2(250, 250)       #positioning the button
+    button.on_click(board.guess)    #Attaching callback board.updatepool with arg glassspade
+    # button.list = ["helloworld"]                        #Changing args
+    button.rect.x, button.rect.y = vec2(450, 250)       #positioning the button
     grp = pg.sprite.Group()     
     grp.add(button) #adding button to sprite group for cursor handling
     #END SAMPLE BUTTON
@@ -31,7 +31,7 @@ def init_game():
     cursor = Cursor(10)
 
     while True:
-        canvas.fill(PURPLE)
+        canvas.fill(OFFWHITE)
 
         board.draw()
         grp.draw(canvas)
