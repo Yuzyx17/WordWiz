@@ -1,7 +1,7 @@
 from src.constants import *
 from pygame.constants import *
 
-from src.core.cursor import Cursor
+from src.utils.cursor import Cursor
 from src.core.board import Board
 from src.utils.button import Button
 
