@@ -20,21 +20,23 @@ class Player():
         letter: Letter
         for letter in self.board.letter_pool:         #for letters in the pool
             if not letter.clicked and letter not in self.board.letter_used:
-                if letter.click(spell and self.board.click, vec2(letter.rect.left, 250)):
+                if letter.click(spell and self.board.click):
                     #State update
                     attempted_index = self.board.letter_pool.sprites().index(letter)
-                    self.state.spell_guess(attempted_index, letter.letter)
+                    attempted_index = self.state.spell_guess(attempted_index, letter.letter)
                     self.board.letter_used.add(letter)   
+                    letter.translate(vec2(tilesize.x*attempted_index, 400))
                     self.board.click = False
                     break
 
         for letter in self.board.letter_used:         #for letters used
             if not letter.clicked:
-                if letter.click(True and self.board.click, vec2(letter.rect.left, 25)):
+                if letter.click(True and self.board.click):
                     #State update
                     attempted_index = self.board.letter_pool.sprites().index(letter)
                     self.state.undo_guess(attempted_index, letter.letter)
                     self.board.letter_used.remove(letter) 
+                    letter.translate(vec2(tilesize.x*attempted_index, 25))
                     self.board.click = False
                     break
     

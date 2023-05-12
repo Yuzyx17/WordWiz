@@ -46,7 +46,6 @@ class BoardState():
         self.guesses: List[List[dict | str]] = []
         self.word = None
         self.hints = defaultdict(defaultValue)
-        self.trie = Trie()
         self.win = False
         self.attempt = 0 #row
         self.index = 0 #col
@@ -146,6 +145,8 @@ class Board():
         elif self.turn == Agents.AI and self.mode == Mode.MASTERMIND:
             self.ai.mastermind()
 
+        if self.state.verify_guess():
+            print(self.state.wordify_guess())
         self.update()
 
     def draw_board():
@@ -153,8 +154,7 @@ class Board():
 
     def update(self):
         #update state and self each turn
-        self.round += 1
-        print(self.round)
+        ...
 
     def start(self):
         #set role of player

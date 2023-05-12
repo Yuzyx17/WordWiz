@@ -11,8 +11,8 @@ class Letter(pg.sprite.Sprite):
         self.letter = char
         self.index = index
 
-        self.transition_speed = 20
-        self.transition_snap = 10
+        self.transition_speed = 60
+        self.transition_snap = 30
         self.clicked = False
         self.move = vec2(self.rect.topleft)
         self.pos = vec2(self.rect.topleft)
@@ -44,22 +44,19 @@ class Letter(pg.sprite.Sprite):
             self.rect.topleft = round(self.pos.x), round(self.pos.y)
 
     def translate(self, target: vec2 = None):
-        self.pos = vec2(self.rect.topleft)
-        self.move = vec2(target - self.pos).normalize()
-        self.target = target
+        if target != self.rect.topleft and self.clicked:
+            self.pos = vec2(self.rect.topleft)
+            self.move = vec2(target - self.pos).normalize()
+            self.target = target
 
-    def emulated_click(self, target: vec2 = None):
-        if target:
-            if target != self.rect.topleft:
-                self.clicked = True
-                self.translate(target)
-                return self.clicked
+    def emulated_click(self):
+        self.clicked = True
+        return self.clicked
 
-    def click(self, clickable=False, target: vec2 = None):
-        if target:   
-            if clickable and self.rect.collidepoint(pg.mouse.get_pos()) and target != self.rect.topleft:
-                self.clicked = True
-                self.translate(target)
-                return self.clicked
+    def click(self, clickable=False):
+        if clickable and self.rect.collidepoint(pg.mouse.get_pos()):
+            self.clicked = True
+        return self.clicked
+
 
         
