@@ -9,7 +9,7 @@ def sampleCB(word = "glass", pool = "gonianless"):
     start = timer()
 
     trie = Trie()
-    # trie.save()
+    trie.save()
     trie.load()
 
     hints = defaultdict(defaultValue)
@@ -43,7 +43,7 @@ def sampleCB(word = "glass", pool = "gonianless"):
 
 def sampleMM(pool="jzkjsdausz"):
     trie = Trie()
-    # trie.save()
+    trie.save()
     trie.load()
     ai = Mastermind(trie, pool)
     print(ai.generateWord())

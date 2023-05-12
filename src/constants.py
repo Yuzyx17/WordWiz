@@ -13,7 +13,7 @@ CYAN = (0, 255, 255)
 
 pg.font.init()
 
-SIZE = vec2(600, 550)
+SIZE = vec2(650, 550)
 TITLE = "WordWiz"
 tilesize = vec2(64, 64)
 pixelfont = ft(r'assets/font/pixelfont.ttf', int(tilesize.x))
