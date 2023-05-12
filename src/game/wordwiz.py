@@ -39,7 +39,7 @@ def init_game():
 
         cursor.reset()
         board.click = False
-        if board.turn == Agents.PLAYER:
+        if board.turn:
             
             if board.spell:
                 cursor.hand([board.letter_used, board.letter_pool, grp])

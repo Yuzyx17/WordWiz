@@ -45,7 +45,7 @@ class BoardState():
     def reset(self):
         self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
         self.guesses: List[List[dict | str]] = []
-        self.word = None
+        self.word = "faced"
         self.hints = defaultdict(defaultValue)
         self.win = False
         self.attempts = []
@@ -84,17 +84,21 @@ class BoardState():
         return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[self.attempt]])
 
     def accept_guess(self):
+        word_guess = self.wordify_guess()
         #check if already attempted
-        if self.wordify_guess() in self.attempts:
-            print(self.wordify_guess()) #try two words, it will appear
-        self.attempts.append(self.wordify_guess())
+        if not self.verify_guess(): return False
+        if word_guess in self.attempts: return False
+        if word_guess == self.word: self.win = True
+        self.attempts.append(word_guess)
         #check win condition
+        for index in range(5):
+            if self.word[index] == word_guess[index]:
+                self.hints[index] = self.word[index]
 
-        if self.win:
-            return
-        #update hints
         self.index = 0
         self.attempt += 1
+
+        return True
     
     def get_guess_attempts(self):
         return 6 - self.attempt
@@ -114,8 +118,8 @@ class Board():
 
         self.round = 1
 
-        self.turn = Agents.PLAYER
-        self.mode = Mode.CODEBREAKER
+        self.turn = True #True = Player; False = AI
+        self.mode = True #True = CB; False = MM
         
         self.letter_pool = pg.sprite.Group()
         self.letter_used = pg.sprite.Group()
@@ -128,6 +132,7 @@ class Board():
         self.pool = pool
         self.letter_pool.empty()
         self.letter_used.empty()
+        self.word_guessed.empty()
         self.state.reset()
 
         for i in range(10):
@@ -156,13 +161,13 @@ class Board():
         self.letter_pool.update()
         self.letter_used.update()
 
-        if self.turn == Agents.PLAYER and self.mode == Mode.CODEBREAKER:
+        if self.turn and self.mode:
             self.player.codebreaker()
-        elif self.turn == Agents.PLAYER and self.mode == Mode.MASTERMIND:
+        elif self.turn and self.mode:
             self.player.mastermind()
-        elif self.turn == Agents.AI and self.mode == Mode.CODEBREAKER:
+        elif self.turn and self.mode:
             self.ai.codebreaker()
-        elif self.turn == Agents.AI and self.mode == Mode.MASTERMIND:
+        elif self.turn and self.mode:
             self.ai.mastermind()
 
 
@@ -185,15 +190,17 @@ class Board():
         self.update()
 
     def guess(self): #This is attached to the button in wordwiz.py as a callback
-        self.state.accept_guess()
-        self.reset_pool()
+        if self.state.accept_guess():
+            self.reset_pool()
 
     def draw_board(self):
         ...
 
     def update(self):
-        #update state and self each turn
-        ...
+        if self.state.win:
+            print("Congratulations")
+            self.state.win = False
+            self.update_pool(self.pool)
 
     def start(self):
         #set role of player
