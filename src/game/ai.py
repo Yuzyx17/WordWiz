@@ -1,17 +1,25 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.core.board import Board
+
 from src.ai.codebreaker import Codebreaker
 from src.ai.mastermind import Mastermind
 
 class AI():
-    def __init__(self):
-        self.codebreaker = None
-        self.mastermind = None
+    def __init__(self, board: Board):
+        self.board = board
+        self.state = self.board.state
+        self.codebreaker: Codebreaker = None
+        self.mastermind: Mastermind = None
         self.role = None
+        self.score = 0
     
-    def as_codebreaker(self, trie, pool, hint):
+    def codebreaker(self, trie, pool, hint):
         self.codebreaker = Codebreaker(trie, pool, hint)
         self.role = True
     
-    def as_mastermind(self, trie, pool):
+    def mastermind(self, trie, pool):
         self.mastermind = Mastermind(trie, pool)
         self.role = False
 

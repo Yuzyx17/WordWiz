@@ -1,6 +1,6 @@
 from src.constants import *
 from pygame.constants import *
-from src.core.letters import Letter
+
 from src.core.cursor import Cursor
 from src.core.board import Board
 from src.utils.button import Button
@@ -21,7 +21,8 @@ def init_game():
 
     #BUTTON SAMPLE
     button = Button(vec2(100, 50), (100, 150, 200))     #Creating Button
-    button.on_click(board.update_pool, "aaaaaccccc")    #Attaching callback board.updatepool
+    button.on_click(board.update_pool, "glassspade")    #Attaching callback board.updatepool with arg glassspade
+    button.list = ["helloworld"]                        #Changing args
     button.rect.x, button.rect.y = vec2(250, 250)       #positioning the button
     grp = pg.sprite.Group()     
     grp.add(button) #adding button to sprite group for cursor handling
@@ -38,7 +39,7 @@ def init_game():
 
         cursor.reset()
         board.click = False
-        if board.turn:
+        if board.turn == Agents.PLAYER:
             
             if board.spell:
                 cursor.hand([board.letter_used, board.letter_pool, grp])
@@ -55,4 +56,4 @@ def init_game():
             board.events(event)
 
         pg.display.flip()
-        clock.tick(120)
+        clock.tick(60)

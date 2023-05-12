@@ -103,4 +103,4 @@ class Codebreaker():
         return (f'candidate: {self.selectCandidate()}\n'+
                 f'candidates: {[candidate for candidate in self.candidates.items()]}\n' +
                 f'attempts: {[attempt for attempt in self.attempts.items()]}\n' +
-                f'hints: {"".join([hint if hint is not None else "_" for hint in self.hints.values()])}\n')
+                f'hints: {"".join(["_" if self.hints[i] is None else self.hints[i] for i in range(5)])}\n')

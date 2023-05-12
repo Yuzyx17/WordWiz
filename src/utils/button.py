@@ -17,8 +17,7 @@ class Button(pg.sprite.Sprite):
         if self.click and self.rect.collidepoint(pg.mouse.get_pos()):
             self.callback(*self.list, **self.dict)
 
-        if self.click:
-            self.click = False
+        self.click = False
 
     def on_click(self, callback, *args, **kwargs):
         self.callback = callback

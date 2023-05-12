@@ -1,21 +1,25 @@
 import pygame as pg
 
-from src.core.letters import Letter
-from src.constants import defaultValue
 from src.constants import *
+from src.core.letters import Letter
+from src.game.player import Player
+from src.game.ai import AI
 from src.utils.trie import Trie
 
-from enum import Enum
 from typing import List
 from collections import defaultdict
 
-class Mode(Enum):
-    CODEBREAKER = 0
-    MASTERMIND = 1
-
-class Agents(Enum):
-    PLAYER = 0
-    AI = 1
+#############################################################
+# self.ai.score        self.word        self.player.score   #
+#               self.guesses[attempts][5]                   #
+#               self.guesses[attempts][4]                   #
+#               self.guesses[attempts][3]                   #
+#               self.guesses[attempts][2]                   #
+#               self.guesses[attempts][1]                   #
+#               self.guesses[attempts][0]                   #
+#                     self.pool % 5                         #
+#                     self.pool % 5         self.button     #
+#############################################################
 
 class BoardState():
     def __init__(self):
@@ -24,6 +28,7 @@ class BoardState():
         self.word = None
         self.hints = defaultdict(defaultValue)
         self.trie = Trie()
+        self.win = False
         self.attempt = 0 #row
         self.index = 0 #col
         
@@ -36,18 +41,19 @@ class BoardState():
         self.trie.save()
         self.trie.load()
 
-    
-    def reset_state(self):
+    def reset(self):
         self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
         self.guesses: List[List[dict | str]] = []
+        self.word = None
         self.hints = defaultdict(defaultValue)
         self.trie = Trie()
+        self.win = False
         self.attempt = 0 #row
         self.index = 0 #col
-
+        
         for _ in range(6):
             guess = []
-            for i in range(5):
+            for _ in range(5):
                 guess.append(' ')
             self.guesses.append(guess)
 
@@ -62,11 +68,13 @@ class BoardState():
         self.index = self.guesses[self.attempt].index(' ')
         self.guesses[self.attempt][self.index] = {key: val}
         self.pool[key] = ' '
-
+        return self.index
+        
     def undo_guess(self, key, val):
         index = self.guesses[self.attempt].index({key: val})
         self.guesses[self.attempt][index] = ' '
         self.pool[key] = val
+        return index
 
     def verify_guess(self):
         return self.trie.search(self.wordify_guess())
@@ -75,10 +83,14 @@ class BoardState():
         return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[self.attempt]])
 
     def accept_guess(self):
+        #check win condition
+        if self.win:
+            return
+        #update hints
         self.index = 0
         self.attempt += 1
     
-    def get_attempts(self):
+    def get_guess_attempts(self):
         return 6 - self.attempt
 
 class Board():
@@ -88,10 +100,13 @@ class Board():
         self.canvas = canvas
         self.spell = True   #if player is allowed to spell
         self.click = True   #for detecting clicks; communicates from events
+        self.start_game = False
         self.pool = ""
 
-        self.player_score = 0
-        self.ai_score = 0
+        self.player = Player(self)
+        self.ai = AI(self)
+
+        self.round = 1
 
         self.turn = Agents.PLAYER
         self.mode = Mode.CODEBREAKER
@@ -101,14 +116,14 @@ class Board():
         self.word_guessed = pg.sprite.Group()
 
     def update_pool(self, pool = None):
-        if len(pool) > 10:
+        if len(pool) != 10:
             return
         self.pool = pool
         self.letter_pool.empty()
         self.letter_used.empty()
-        self.state.reset_state()
+        self.state.reset()
 
-        for i in range(len(pool)):
+        for i in range(10):
             self.state.pool[i] = self.pool[i]
             letter = Letter(self.state.pool[i])
             letter.rect.x = i*tilesize.x
@@ -123,46 +138,30 @@ class Board():
         self.letter_used.update()
 
         if self.turn == Agents.PLAYER and self.mode == Mode.CODEBREAKER:
-            self.player_codebreaker()
+            self.player.codebreaker()
         elif self.turn == Agents.PLAYER and self.mode == Mode.MASTERMIND:
-            self.player_mastermind()
-        elif self.turn == Agents.AI and self.mode == Mode.MASTERMIND:
-            self.ai_mastermind()
+            self.player.mastermind()
         elif self.turn == Agents.AI and self.mode == Mode.CODEBREAKER:
-            self.ai_codebreaker()
- 
-    def player_codebreaker(self):
-        #TRIAL ONLY FOR WHEN TURN = PLAYER and MODE = CODEBREAKER
-        self.spell = self.state.can_spell_guess()  #if current board state allows for spelling
-        
-        letter: Letter
-        for letter in self.letter_pool:         #for letters in the pool
-            if not letter.clicked and letter not in self.letter_used:
-                if letter.click(self.spell and self.click, vec2(letter.rect.left, 250)):
-                    #State update
-                    attempted_index = self.letter_pool.sprites().index(letter)
-                    self.state.spell_guess(attempted_index, letter.letter)
-                    self.letter_used.add(letter)   
-                    self.click = False
-                    break
+            self.ai.codebreaker()
+        elif self.turn == Agents.AI and self.mode == Mode.MASTERMIND:
+            self.ai.mastermind()
 
-        for letter in self.letter_used:         #for letters used
-            if not letter.clicked:
-                if letter.click(True and self.click, vec2(letter.rect.left, 25)):
-                    #State update
-                    attempted_index = self.letter_pool.sprites().index(letter)
-                    self.state.undo_guess(attempted_index, letter.letter)
-                    self.letter_used.remove(letter) 
-                    self.click = False
-                    break
-    
-    def player_mastermind(self):
-        ...
-    
-    def ai_codebreaker(self):
+        self.update()
+
+    def draw_board():
         ...
 
-    def ai_mastermind(self):
+    def update(self):
+        #update state and self each turn
+        self.round += 1
+        print(self.round)
+
+    def start(self):
+        #set role of player
+        ...
+    
+    def restart(self):
+        #end of game condition
         ...
 
     def events(self, event):

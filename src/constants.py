@@ -1,5 +1,6 @@
 from pygame import Font as ft
 from pygame import Vector2 as vec2
+from enum import Enum
 import pygame as pg
 
 WHITE = (255, 255, 255)
@@ -19,6 +20,14 @@ tilesize = vec2(64, 64)
 pixelfont = ft(r'assets/font/pixelfont.ttf', int(tilesize.x))
 
 alpha = 'abcdefghijklmnopqrstuvwxyz'
+
+class Mode(Enum):
+    CODEBREAKER = 0
+    MASTERMIND = 1
+
+class Agents(Enum):
+    PLAYER = 0
+    AI = 1
 
 def getLetterIndex(letter):
     return ord(letter) - ord('a')

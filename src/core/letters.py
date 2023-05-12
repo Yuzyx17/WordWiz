@@ -1,5 +1,4 @@
 import pygame as pg
-import math
 from src.constants import *
 
 class Letter(pg.sprite.Sprite):
@@ -44,22 +43,23 @@ class Letter(pg.sprite.Sprite):
             self.pos.y += self.move.y * self.transition_speed
             self.rect.topleft = round(self.pos.x), round(self.pos.y)
 
+    def translate(self, target: vec2 = None):
+        self.pos = vec2(self.rect.topleft)
+        self.move = vec2(target - self.pos).normalize()
+        self.target = target
+
     def emulated_click(self, target: vec2 = None):
         if target:
             if target != self.rect.topleft:
                 self.clicked = True
-                self.pos = vec2(self.rect.topleft)
-                self.move = vec2(target - self.pos).normalize()
-                self.target = target
+                self.translate(target)
                 return self.clicked
 
-    def click(self, clicked=False, target: vec2 = None):
+    def click(self, clickable=False, target: vec2 = None):
         if target:   
-            if clicked and self.rect.collidepoint(pg.mouse.get_pos()) and target != self.rect.topleft:
+            if clickable and self.rect.collidepoint(pg.mouse.get_pos()) and target != self.rect.topleft:
                 self.clicked = True
-                self.pos = vec2(self.rect.topleft)
-                self.move = vec2(target - self.pos).normalize()
-                self.target = target
+                self.translate(target)
                 return self.clicked
 
         
