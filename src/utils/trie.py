@@ -26,7 +26,7 @@ class Trie():
         for letter in word:
             nodeIndex = ord(letter) - ord('a')
             if nodes[nodeIndex] is None:
-                nodes[nodeIndex] = TrieNode()
+                return False
             node = nodes[nodeIndex]
             nodes = node.nodes
             

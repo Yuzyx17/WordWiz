@@ -15,7 +15,7 @@ def init_game():
     clock = pg.time.Clock()
 
     board = Board(canvas)
-    board.update_pool("abedefghij")
+    board.update_pool("abcdefghee")
 
     cursor = Cursor(10)
     player = True

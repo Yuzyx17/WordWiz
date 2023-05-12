@@ -19,7 +19,6 @@ class Cursor(p.sprite.Sprite):
         sg.empty()
         del sg
         
-    
     def reset(self):
         if not self.colliding:
             p.mouse.set_cursor(p.SYSTEM_CURSOR_ARROW)

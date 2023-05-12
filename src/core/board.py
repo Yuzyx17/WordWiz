@@ -1,15 +1,24 @@
 import pygame as pg
-from collections import Counter
+
 from src.core.letters import Letter
+from src.constants import defaultValue
 from src.constants import *
+from src.utils.trie import Trie
+
 from typing import List
+from collections import defaultdict
 
 class BoardState():
     def __init__(self):
         self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
         self.guesses: List[List[dict | str]] = []
+        self.hints = defaultdict(defaultValue)
+        self.trie = Trie()
         self.attempt = 0 #row
         self.index = 0 #col
+
+        self.trie.save()
+        self.trie.load()
 
         for _ in range(6):
             guess = []
@@ -28,19 +37,17 @@ class BoardState():
         self.index = self.guesses[self.attempt].index(' ')
         self.guesses[self.attempt][self.index] = {key: val}
         self.pool[key] = ' '
-        print(f'{self.guesses[self.attempt]}\n {self.pool}')
 
     def undo(self, key, val):
         index = self.guesses[self.attempt].index({key: val})
         self.guesses[self.attempt][index] = ' '
         self.pool[key] = val
-        print(f'{self.guesses[self.attempt]}\n {self.pool}')
 
-    def verify(self, word):
-        ...
+    def verify(self):
+        return self.trie.search(self.wordify())
     
-    def wordify(self, guess_index):
-        ...
+    def wordify(self):
+        return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[self.attempt]])
     
     def guess(self):
         self.index = 0
@@ -82,19 +89,21 @@ class Board():
         for letter in self.letter_pool:
             letter.update()
             if not letter.clicked and letter not in self.letter_used:
-                if letter.click(self.spell and self.click, vec2(letter.rect.x, 250)):
+                if letter.click(self.spell and self.click, vec2(tilesize.x*self.letter_pool.sprites().index(letter), 250)):
                     attempted_index = self.letter_pool.sprites().index(letter)
                     self.state.spell(attempted_index, letter.letter)
                     self.letter_used.add(letter)          
+                    print(self.state.verify(), self.state.wordify())
 
         for letter in self.letter_used:
             letter.update()
             if not letter.clicked:
-                if letter.click(True and self.click, vec2(letter.rect.x, 25)):
+                if letter.click(True and self.click, vec2(tilesize.x*self.letter_pool.sprites().index(letter), 25)):
                     attempted_index = self.letter_pool.sprites().index(letter)
                     self.state.undo(attempted_index, letter.letter)
                     self.letter_used.remove(letter)
 
+                # letter.emulated_click(vec2(400, 400))
                     
         if self.click:
             self.click = False
