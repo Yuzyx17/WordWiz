@@ -89,9 +89,7 @@ class BoardState():
             print(self.wordify_guess()) #try two words, it will appear
         self.attempts.append(self.wordify_guess())
         #check win condition
-        for item in self.guesses[self.attempt]:
-            if item != ' ':
-                self.pool.update(item)
+
         if self.win:
             return
         #update hints

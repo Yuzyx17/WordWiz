@@ -15,28 +15,28 @@ class Player():
     
     def codebreaker(self):
         #TRIAL ONLY FOR WHEN TURN = PLAYER and MODE = CODEBREAKER
-        spell = self.state.can_spell_guess()  #if current board state allows for spelling
+        self.board.spell = self.state.can_spell_guess()  #if current board state allows for spelling
         
         letter: Letter
         for letter in self.board.letter_pool:         #for letters in the pool
             if not letter.clicked and letter not in self.board.letter_used:
-                if letter.click(spell and self.board.click):
+                if letter.click(self.board.spell and self.board.click):
                     #State update
                     attempted_index = self.board.letter_pool.sprites().index(letter)
                     attempted_index = self.state.spell_guess(attempted_index, letter.letter)
-                    self.board.letter_used.add(letter)   
                     letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+                    self.board.letter_used.add(letter)   
                     self.board.click = False
                     break
 
         for letter in self.board.letter_used:         #for letters used
             if not letter.clicked:
-                if letter.click(True and self.board.click):
+                if letter.click(self.board.click):
                     #State update
                     attempted_index = self.board.letter_pool.sprites().index(letter)
+                    letter.translate(vec2(tilesize.x*attempted_index, 25))
                     self.state.undo_guess(attempted_index, letter.letter)
                     self.board.letter_used.remove(letter) 
-                    letter.translate(vec2(tilesize.x*attempted_index, 25))
                     self.board.click = False
                     break
     
