@@ -2,14 +2,14 @@ import pygame as pg
 from collections import Counter
 from src.core.letters import Letter
 from src.constants import *
+from typing import List
 
 class BoardState():
     def __init__(self):
         self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
-        self.guesses = []
+        self.guesses: List[List[dict | str]] = []
         self.attempt = 0 #row
         self.index = 0 #col
-        self.spelled = False
 
         for _ in range(6):
             guess = []
@@ -17,15 +17,25 @@ class BoardState():
                 guess.append(' ')
             self.guesses.append(guess)
     
+    def spellable(self):
+        try:
+            self.index = self.guesses[self.attempt].index(' ')
+            return True
+        except Exception as e:
+            return False
+
     def spell(self, key, val):
+        self.index = self.guesses[self.attempt].index(' ')
         self.guesses[self.attempt][self.index] = {key: val}
         self.pool[key] = ' '
-        self.index += 1
-        print(f'{self.guesses}\n {self.pool}')
+        print(f'{self.guesses[self.attempt]}\n {self.pool}')
 
-    def undo(self, index, pos):
-        ...
-    
+    def undo(self, key, val):
+        index = self.guesses[self.attempt].index({key: val})
+        self.guesses[self.attempt][index] = ' '
+        self.pool[key] = val
+        print(f'{self.guesses[self.attempt]}\n {self.pool}')
+
     def verify(self, word):
         ...
     
@@ -48,9 +58,7 @@ class Board():
         self.letter_used = pg.sprite.Group()
         self.word_guessed = pg.sprite.Group()
 
-        self.letter_select = True
-
-    def update_pool(self, pool):
+    def update_pool(self, pool = None):
         if len(pool) > 10:
             return
         self.pool = pool
@@ -67,33 +75,26 @@ class Board():
         self.letter_used.draw(self.canvas)
         self.word_guessed.draw(self.canvas)
 
-        if self.state.index >= 5:
-            self.spell = False
-            self.click = False
-            self.letter_select = False
-            pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
-        else:
-            self.spell = True
+        spellable = self.state.spellable()
+        self.spell = spellable
             
         letter: Letter
         for letter in self.letter_pool:
             letter.update()
-            if not letter.clicked:
+            if not letter.clicked and letter not in self.letter_used:
                 if letter.click(self.spell and self.click, vec2(letter.rect.x, 250)):
                     attempted_index = self.letter_pool.sprites().index(letter)
-                    # self.state.spell(attempted_index, letter.letter)
-                    # print(letter.letter, letter.index)
-                    self.letter_used.add(self.letter_pool.sprites().pop(attempted_index))
-                    self.letter_pool.remove(letter)
-                    
+                    self.state.spell(attempted_index, letter.letter)
+                    self.letter_used.add(letter)          
 
         for letter in self.letter_used:
             letter.update()
             if not letter.clicked:
                 if letter.click(True and self.click, vec2(letter.rect.x, 25)):
-                    attempted_index = self.letter_used.sprites().index(letter)
-                    self.letter_pool.add(self.letter_used.sprites().pop(attempted_index))
+                    attempted_index = self.letter_pool.sprites().index(letter)
+                    self.state.undo(attempted_index, letter.letter)
                     self.letter_used.remove(letter)
+
                     
         if self.click:
             self.click = False

@@ -16,6 +16,8 @@ class Cursor(p.sprite.Sprite):
         if p.sprite.spritecollide(self, sg, False):
             self.colliding = True
             p.mouse.set_cursor(p.SYSTEM_CURSOR_HAND)
+        sg.empty()
+        del sg
         
     
     def reset(self):

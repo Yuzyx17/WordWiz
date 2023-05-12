@@ -26,7 +26,7 @@ def init_game():
         cursor.reset()
         if player:
             
-            if board.letter_select:
+            if board.spell:
                 cursor.hand([board.letter_used, board.letter_pool])
             else:
                 cursor.hand([board.letter_used])
