@@ -7,10 +7,7 @@ from src.utils.button import Button
 
 import pygame as pg
 import sys
-def hello(*args, **kwargs):
-    for arg in args:
-        print(arg)
-    print(kwargs)
+
 
 def init_game():
     pg.init()
@@ -22,31 +19,31 @@ def init_game():
     board = Board(canvas)
     board.update_pool("abcdefghee")
 
-    button = Button(vec2(100, 50), (100, 150, 200)) #Creating Button
-    button.on_click(hello, 2, 's', m="asdasd")      #Attaching callback
-    button.rect.x, button.rect.y = vec2(250, 250)   #positioning the button
+    #BUTTON SAMPLE
+    button = Button(vec2(100, 50), (100, 150, 200))     #Creating Button
+    button.on_click(board.update_pool, "aaaaaccccc")    #Attaching callback board.updatepool
+    button.rect.x, button.rect.y = vec2(250, 250)       #positioning the button
     grp = pg.sprite.Group()     
     grp.add(button) #adding button to sprite group for cursor handling
+    #END SAMPLE BUTTON
 
     cursor = Cursor(10)
 
     while True:
         canvas.fill(PURPLE)
 
+        board.draw()
         grp.draw(canvas)
-
         grp.update(board.click)     #sample of attached callback
 
-        board.draw()
-       
-
         cursor.reset()
+        board.click = False
         if board.turn:
             
             if board.spell:
-                cursor.hand([board.letter_used, board.letter_pool])
+                cursor.hand([board.letter_used, board.letter_pool, grp])
             else:
-                cursor.hand([board.letter_used])
+                cursor.hand([board.letter_used, grp])
 
         for event in pg.event.get():
             if event.type == QUIT:
@@ -55,9 +52,6 @@ def init_game():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     board.click = True
-            if event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    board.click = False
             board.events(event)
 
         pg.display.flip()
