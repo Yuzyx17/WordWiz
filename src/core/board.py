@@ -26,17 +26,16 @@ class Board():
         
         self.letter_pool = pg.sprite.Group()
         self.letter_used = pg.sprite.Group()
-        self.letter_hint = pg.sprite.Group()
         self.word_guessed = pg.sprite.Group()
 
     #for each round
-    def update_pool(self, pool = None):
+    def update_turn(self, pool = None):
         if len(pool) != 10:
             return
         self.pool = pool
+        self.word_guessed.empty()
         self.letter_pool.empty()
         self.letter_used.empty()
-        self.word_guessed.empty()
         self.state.reset()
 
         self.state.pool_string = pool
@@ -48,11 +47,12 @@ class Board():
 
     def render_hints(self):
         word = self.state.wordify_guess(self.state.attempt-1)
-        for char in word:
+        for index in range(len(word)):
+            char = word[index]
             letter = Letter(char)
-            letter.rect = self.letter_used.sprites()[word.index(char)].rect
+            letter.rect.topleft = vec2(tilesize.x*index, 100+((self.state.attempt-1)*tilesize.y))
             letter.fill = WHITE
-            if self.state.hints[word.index(char)] == char:
+            if self.state.hints[index] == char:
                 letter.fill = GREEN
             letter.draw()
             self.word_guessed.add(letter)
@@ -119,16 +119,27 @@ class Board():
     def guess(self): #This is attached to the button in wordwiz.py as a callback
         if self.state.accept_guess():
             self.reset_pool()
+        print(self.word_guessed)
         # print(self.ai.mastermind(self.pool))
 
     def draw_board(self):
         ...
 
     def update(self):
+        self.on_win_as_codebreaker()
+        self.on_lose_as_codebreaker()
+
+    def on_win_as_codebreaker(self):
         if self.state.win:
             print("Congratulations")
             self.state.win = False
-            self.update_pool(self.pool)
+            self.update_turn(self.pool)
+        
+    def on_lose_as_codebreaker(self):
+        if self.state.get_guess_attempts() == 0:
+            print(f'YOU LOSE! word is {self.state.word_string}')
+            self.state.reset()
+            self.update_turn(self.pool)
 
     def start(self):
         #set role of player

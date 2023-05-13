@@ -88,6 +88,10 @@ class BoardState():
         return index
 
     def verify_guess(self):
+        if self.attempt > 5:
+            return False
+        if self.wordify_guess(self.attempt) in self.attempts:
+            return False
         return self.trie.search(self.wordify_guess(self.attempt))
     
     def wordify_guess(self, index):

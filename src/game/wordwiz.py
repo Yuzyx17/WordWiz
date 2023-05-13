@@ -17,7 +17,7 @@ def init_game():
     clock = pg.time.Clock()
 
     board = Board(canvas)
-    board.update_pool("abcdefghee")
+    board.update_turn("glassrocky")
 
     #BUTTON SAMPLE
     button = Button(vec2(200, 50), (100, 150, 200))     #Creating Button

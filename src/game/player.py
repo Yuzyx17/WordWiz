@@ -22,8 +22,11 @@ class Player():
             if not letter.clicked and letter not in self.board.letter_used:
                 if letter.click(self.board.spell and self.board.click):
                     #State update
-                    attempted_index = self.board.letter_pool.sprites().index(letter)
+                    #Gets the index of the letter clicked from pool
+                    attempted_index = self.board.letter_pool.sprites().index(letter)        
+                    #Gets the FIRST empty slot from self.state.guesses[self.attempt]
                     attempted_index = self.state.spell_guess(attempted_index, letter.letter)
+                    #Translate the position of the letter to the empty slot
                     letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
                     self.board.letter_used.add(letter)   
                     self.board.click = False
