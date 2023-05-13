@@ -6,12 +6,14 @@ class Button(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface(size) if surface is None else surface
         self.rect = self.image.get_rect()
+        self.fill = color
         self.callback = None
         self.list = None
         self.dict = None
         self.returnValue = None
 
         self.click = False
+        self.image.fill(self.fill)
     
     def update(self, click):
         self.click = click
@@ -19,6 +21,13 @@ class Button(pg.sprite.Sprite):
             self.returnValue = self.callback(*self.list, **self.dict)
 
         self.click = False
+    def set_text(self, text, color = BLACK):
+        self.image.fill(self.fill)
+        text = pixelfont_sm.render(text, True, color)
+        text_rect = text.get_rect()
+        text_rect.centerx = self.rect.w//2
+        text_rect.centery = self.rect.h//2
+        self.image.blit(text, text_rect)
 
     def on_click(self, callback, *args, **kwargs):
         self.callback = callback

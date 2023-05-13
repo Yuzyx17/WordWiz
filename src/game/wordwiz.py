@@ -20,10 +20,11 @@ def init_game():
     board.update_pool("abcdefghee")
 
     #BUTTON SAMPLE
-    button = Button(vec2(100, 50), (100, 150, 200))     #Creating Button
+    button = Button(vec2(200, 50), (100, 150, 200))     #Creating Button
     button.on_click(board.guess)    #Attaching callback board.updatepool with arg glassspade
     # button.list = ["helloworld"]                        #Changing args
     button.rect.x, button.rect.y = vec2(450, 250)       #positioning the button
+    button.set_text("Click Me!", pg.Color(255, 255, 0))
     grp = pg.sprite.Group()     
     grp.add(button) #adding button to sprite group for cursor handling
     #END SAMPLE BUTTON

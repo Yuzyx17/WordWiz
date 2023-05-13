@@ -16,11 +16,12 @@ class Mastermind():
     def generateWord(self):
         self.search(self.node.nodes, 0)
         for word in self.candidates.keys():
-            stats = Counter(word)
-            for values in stats.values():
-                self.candidates[word] *= values
+            self.candidates[word] += rd.randint(1, 5) * rd.randint(-3, 3)
+            # stats = Counter(word)
+            # for values in stats.values():
+            #     self.candidates[word] *= values
         
-        print(dict(sorted(self.candidates.items(), key=lambda x:x[1])))
+        # print(dict(sorted(self.candidates.items(), key=lambda x:x[1])))
         if len(self.candidates) != 0:
             return min(self.candidates, key=self.candidates.get)
         return ""

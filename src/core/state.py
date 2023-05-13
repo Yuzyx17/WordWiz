@@ -18,15 +18,21 @@ from src.utils.trie import Trie
 
 class BoardState():
     def __init__(self):
-        self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
-        self.guesses: List[List[dict | str]] = []
-        self.word = None
-        self.hints = defaultdict(defaultValue)
         self.trie = Trie()
-        self.win = False
+        self.hints = defaultdict(defaultValue)
+
+        self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
+        self.word = dict(zip((i for i in range(5)),(' ' for _ in range(5))))
+        self.guesses: List[List[dict | str]] = []
         self.attempts = []
+
         self.attempt = 0 #row
         self.index = 0 #col
+        
+        self.pool_string = ""
+        self.word_string = ""
+
+        self.win = False
         
         for _ in range(6):
             guess = []
@@ -53,6 +59,15 @@ class BoardState():
                 guess.append(' ')
             self.guesses.append(guess)
 
+    def verify_code(self):
+        ...
+    
+    def accept_code(self):
+        ...
+
+    def wordify_code(self):
+        ...
+
     def can_spell_guess(self):
         try:
             self.index = self.guesses[self.attempt].index(' ')
@@ -73,22 +88,24 @@ class BoardState():
         return index
 
     def verify_guess(self):
-        return self.trie.search(self.wordify_guess())
+        return self.trie.search(self.wordify_guess(self.attempt))
     
-    def wordify_guess(self):
-        return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[self.attempt]])
+    def wordify_guess(self, index):
+        return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[index]])
 
     def accept_guess(self):
-        word_guess = self.wordify_guess()
+        word_guess = self.wordify_guess(self.attempt)
         #check if already attempted
         if not self.verify_guess(): return False
         if word_guess in self.attempts: return False
-        if word_guess == self.word: self.win = True
+        if word_guess == self.word_string: 
+            self.win = True
+            return True
         self.attempts.append(word_guess)
         #check win condition
         for index in range(5):
-            if self.word[index] == word_guess[index]:
-                self.hints[index] = self.word[index]
+            if self.word_string[index] == word_guess[index]:
+                self.hints[index] = self.word_string[index]
 
         self.index = 0
         self.attempt += 1
