@@ -19,8 +19,9 @@ class Button(pg.sprite.Sprite):
         self.click = click
         if self.click and self.rect.collidepoint(pg.mouse.get_pos()):
             self.returnValue = self.callback(*self.list, **self.dict)
-
+            self.click = False
         self.click = False
+
     def set_text(self, text, color = BLACK):
         self.image.fill(self.fill)
         text = pixelfont_sm.render(text, True, color)

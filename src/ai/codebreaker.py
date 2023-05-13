@@ -10,9 +10,10 @@ class Codebreaker():
         self.pool = [letter for letter in pool]
         self.hints = defaultdict(defaultValue)
         self.pool_stack = []
+        self.candidate = ""
         self.candidates = defaultdict(defaultValue)
         self.globalScore = 0
-        self.max_candidates = 5
+        self.max_candidates = 25
         self.word = []
         self.attempts = defaultdict(defaultValue)
 
@@ -52,17 +53,17 @@ class Codebreaker():
             if len(self.candidates) == self.max_candidates:
                 return
             
-            for word in self.attempts:
-                if word and self.hints[depth]:
-                    if word[depth] == letter and self.hints[depth] != word[depth]:
-                        used = True
-                else:
-                    if word:
-                        if word[depth] == letter:
-                            used = True
-            if used:
-                used = False
-                continue
+            # for word in self.attempts:
+            #     if word and self.hints[depth]:
+            #         if word[depth] == letter and self.hints[depth] != word[depth]:
+            #             used = True
+            #     else:
+            #         if word:
+            #             if word[depth] == letter:
+            #                 used = True
+            # if used:
+            #     used = False
+            #     continue
 
             self.word.append(letter)     
             current_node = node.nodes[getLetterIndex(letter)]
@@ -85,9 +86,11 @@ class Codebreaker():
 
     def think(self):
         self.search(self.trie.nodes)
-        candidate = self.selectCandidate()
-        self.attempts[candidate] = self.candidates[candidate]
-        return candidate
+        self.candidate = self.selectCandidate()
+        return self.candidate
+
+    def update_candidate(self):
+        self.attempts[self.candidate] = self.candidates[self.candidate]
 
     def rethink(self, hints = None):
         if hints is not None:

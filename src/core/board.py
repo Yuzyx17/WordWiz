@@ -38,6 +38,9 @@ class Board():
         self.letter_used.empty()
         self.state.reset()
 
+        if not self.turn:
+            self.ai.cb_init(self.pool)
+
         self.state.pool_string = pool
         for i in range(10):
             self.state.pool[i] = self.pool[i]
@@ -117,9 +120,15 @@ class Board():
         self.update()
 
     def guess(self): #This is attached to the button in wordwiz.py as a callback
-        if self.state.accept_guess():
-            self.reset_pool()
-        print(self.word_guessed)
+
+        if self.turn and self.mode:
+            if self.state.accept_guess():
+                self.reset_pool()
+        if not self.turn and self.mode:
+            candidate = self.ai.agent_codebreaker.think()
+            self.ai.agent_codebreaker.update_candidate()
+            self.ai.update_codebreaker(self.state.hints)
+        # print(self.word_guessed)
         # print(self.ai.mastermind(self.pool))
 
     def draw_board(self):

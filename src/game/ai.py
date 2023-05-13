@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.core.board import Board
-
+from collections import defaultdict
+from src.constants import defaultValue
 from src.ai.codebreaker import Codebreaker
 from src.ai.mastermind import Mastermind
 
@@ -11,13 +12,19 @@ class AI():
         self.board = board
         self.state = self.board.state
         self.trie = self.state.trie
+        self.pool = ""
+        self.hints = defaultdict(defaultValue)
         self.agent_codebreaker: Codebreaker = None
         self.agent_mastermind: Mastermind = None
         self.score = 0
     
-    def codebreaker(self, pool, hint):
-        self.agent_codebreaker = Codebreaker(self.trie, pool, hint)
-    
+    def cb_init(self, pool):
+        self.agent_codebreaker = Codebreaker(self.trie, pool)
+
+    def codebreaker(self):
+        # print(self.agent_codebreaker.think())
+        ...
+
     def mastermind(self, pool):
         self.agent_mastermind = Mastermind(self.trie, pool)
         self.state.word_string = self.agent_mastermind.generateWord()
