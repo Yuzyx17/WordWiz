@@ -8,6 +8,7 @@ class Letter(pg.sprite.Sprite):
         self.fill = WHITE
         self.rect = self.image.get_rect()
         self.rect.topleft = target
+        self.lock = False
         self.letter = char
         self.index = index
 
@@ -55,7 +56,7 @@ class Letter(pg.sprite.Sprite):
         return self.clicked
 
     def click(self, clickable=False):
-        if clickable and self.rect.collidepoint(pg.mouse.get_pos()):
+        if clickable and self.rect.collidepoint(pg.mouse.get_pos()) and not self.lock:
             self.clicked = True
         return self.clicked
 

@@ -19,7 +19,7 @@ pg.font.init()
 
 SIZE = vec2(650, 550)
 TITLE = "WordWiz"
-tilesize = vec2(64, 64)
+tilesize = vec2(48, 48)
 pixelfont = ft(r'assets/font/pixelfont.ttf', int(tilesize.x))
 pixelfont_sm = ft(r'assets/font/pixelfont.ttf', int(tilesize.x)//4)
 

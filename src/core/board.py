@@ -26,6 +26,7 @@ class Board():
         
         self.letter_pool = pg.sprite.Group()
         self.letter_used = pg.sprite.Group()
+        self.letter_hints = pg.sprite.Group()
         self.word_guessed = pg.sprite.Group()
 
     #for each round
@@ -77,9 +78,11 @@ class Board():
         self.word_guessed.draw(self.canvas)     #drawing guesses
         self.letter_pool.draw(self.canvas)      #drawing pool of letters
         self.letter_used.draw(self.canvas)      #drawing spell attempt
+        self.letter_hints.draw(self.canvas)
 
         self.letter_pool.update()
         self.letter_used.update()
+        self.letter_hints.update()
         
         #Player Role
         #CB             #MM

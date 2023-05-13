@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.core.board import Board
 
+from collections import OrderedDict
+
 from src.core.letters import Letter
 from src.constants import *
 
@@ -16,7 +18,7 @@ class Player():
     def codebreaker(self):
         #TRIAL ONLY FOR WHEN TURN = PLAYER and MODE = CODEBREAKER
         self.board.spell = self.state.can_spell_guess()  #if current board state allows for spelling
-        
+
         letter: Letter
         for letter in self.board.letter_pool:         #for letters in the pool
             if not letter.clicked and letter not in self.board.letter_used:
@@ -31,7 +33,25 @@ class Player():
                     self.board.letter_used.add(letter)   
                     self.board.click = False
                     break
-
+                    # letter.emulated_click()
+                
+                ##THIS IS FOR FORCED HINT USAGE!
+                hints = OrderedDict(sorted(self.state.hints.items()))
+                for index, hint in hints.items():
+                    if hint:
+                        if (letter.letter == hint and 
+                            self.state.guesses[self.state.attempt][index] == ' '):
+                            self.state.guesses[self.state.attempt][index] = {index: hint}
+                            letter.transition_speed = letter.transition_speed//4
+                            letter.transition_snap = letter.transition_snap//4
+                            letter.emulated_click()
+                            letter.translate(vec2(tilesize.x*index, 100+(self.state.attempt*tilesize.y)))
+                            letter.lock = True
+                            self.board.letter_used.add(letter)   
+                            print(letter.groups())
+                            self.board.click = False
+                            break
+                        
         for letter in self.board.letter_used:         #for letters used
             if not letter.clicked:
                 if letter.click(self.board.click):
@@ -42,6 +62,7 @@ class Player():
                     self.board.letter_used.remove(letter) 
                     self.board.click = False
                     break
-    
+                
+
     def mastermind(self):
         ...

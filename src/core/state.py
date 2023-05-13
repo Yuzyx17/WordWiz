@@ -21,9 +21,9 @@ class BoardState():
         self.trie = Trie()
         self.hints = defaultdict(defaultValue)
 
-        self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
-        self.word = dict(zip((i for i in range(5)),(' ' for _ in range(5))))
-        self.guesses: List[List[dict | str]] = []
+        self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10)))) #Holds the pool with respective index, index is used for transitions
+        self.word = dict(zip((i for i in range(5)),(' ' for _ in range(5))))    #Holds the words to be guessed with index from pool for transition
+        self.guesses: List[List[dict | str]] = []  #Holds the guess with index from pool, this is used for reverting
         self.attempts = []
 
         self.attempt = 0 #row
@@ -104,12 +104,17 @@ class BoardState():
         return "".join([list(x.values())[0] if type(x) == dict else '' for x in self.guesses[index]])
 
     def accept_guess(self):
+        if self.get_guess_attempts() == 0:
+            return False
+        
         word_guess = self.wordify_guess(self.attempt)
         #check if already attempted
         if not self.verify_guess(): return False
         if word_guess in self.attempts: return False
         if word_guess == self.word_string: 
             self.win = True
+            self.index = 0
+            self.attempt += 1
             return True
         self.attempts.append(word_guess)
         #check win condition
