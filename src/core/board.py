@@ -128,8 +128,6 @@ class Board():
             candidate = self.ai.agent_codebreaker.think()
             self.ai.agent_codebreaker.update_candidate()
             self.ai.update_codebreaker(self.state.hints)
-        # print(self.word_guessed)
-        # print(self.ai.mastermind(self.pool))
 
     def draw_board(self):
         ...

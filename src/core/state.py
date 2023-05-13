@@ -44,18 +44,24 @@ class BoardState():
         self.trie.load()
 
     def reset(self):
-        self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
-        self.guesses: List[List[dict | str]] = []
-        self.word = "faced"
         self.hints = defaultdict(defaultValue)
-        self.win = False
+
+        self.pool = dict(zip((i for i in range(10)), (' ' for _ in range(10))))
+        self.word = dict(zip((i for i in range(5)),(' ' for _ in range(5))))
+        self.guesses: List[List[dict | str]] = []
         self.attempts = []
+
         self.attempt = 0 #row
         self.index = 0 #col
         
+        self.pool_string = ""
+        self.word_string = ""
+
+        self.win = False
+        
         for _ in range(6):
             guess = []
-            for _ in range(5):
+            for i in range(5):
                 guess.append(' ')
             self.guesses.append(guess)
 
