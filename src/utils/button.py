@@ -22,6 +22,9 @@ class Button(pg.sprite.Sprite):
             self.click = False
         self.click = False
 
+    def emulate_click(self):
+        self.click = True
+
     def set_text(self, text, color = BLACK):
         self.image.fill(self.fill)
         text = pixelfont_sm.render(text, True, color)

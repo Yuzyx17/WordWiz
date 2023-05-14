@@ -22,12 +22,16 @@ class AI():
         self.guess = ""
         self.guess_index = 0
         self.score = 0
-        self.speed = 5
+        self.speed = 2
+        self.word = ""
 
         self.test = 0
     
-    def mastermind(self, pool):
-        self.agent_mastermind = Mastermind(self.trie, pool)
+    def mastermind(self, pool=None):
+        if pool is not None:
+            self.agent_mastermind = Mastermind(self.trie, pool)
+        else:
+            self.agent_mastermind = Mastermind(self.trie)
 
     def cb_init(self, pool):
         self.agent_codebreaker = Codebreaker(self.trie, pool)
@@ -45,7 +49,7 @@ class AI():
                 self.board.letter_used.add(letter)   
                 self.guess_index += 1
                 break
-
+        
         if self.state.accept_guess():
             self.update_codebreaker(self.state.hints) 
 
@@ -71,6 +75,7 @@ class AI():
         # self.board.update_turn(self.board.pool)
         self.board.change_turn(turns.AMM)
         self.board.phase += 1
+        self.board.player.word = []
         # self.state.reset()
         print("Begin! now AI Mastermind")
         

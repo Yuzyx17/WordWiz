@@ -17,42 +17,25 @@ def init_game():
     clock = pg.time.Clock()
 
     board = Board(canvas)
-    board.update_turn("glassrocky")
-
-    #BUTTON SAMPLE
-    button = Button(vec2(200, 50), (100, 150, 200))     #Creating Button
-    button.on_click(board.guess)    #Attaching callback board.updatepool with arg glassspade
-    # button.list = ["helloworld"]                        #Changing args
-    button.rect.x, button.rect.y = vec2(450, 250)       #positioning the button
-    button.set_text("Click Me!", pg.Color(255, 255, 0))
-    giveup = Button(vec2(200, 50), (100, 100, 250))
-    giveup.on_click(board.player.giveup)
-    giveup.rect.x, giveup.rect.y = vec2(350, 325)
-    giveup.set_text("Reset", pg.Color(255, 0, 0))
-    grp = pg.sprite.Group()     
-    grp.add(button) #adding button to sprite group for cursor handling
-    grp.add(giveup)
-    #END SAMPLE BUTTON
-
     cursor = Cursor(10)
 
     while True:
         canvas.fill(OFFWHITE)
-
         board.draw()
-        grp.draw(canvas)
-        grp.update(board.click)     #sample of attached callback
 
         cursor.reset()
         board.click = False
         if board.turn:
             
             if board.spell:
-                cursor.hand([board.letter_used, board.letter_pool, grp])
+                cursor.hand([board.letter_used, 
+                             board.letter_pool, 
+                             board.buttons])
             else:
-                cursor.hand([board.letter_used, grp])
+                cursor.hand([board.letter_used, 
+                             board.buttons])
         else:
-            cursor.hand([grp])    
+            cursor.hand([board.buttons])    
 
         for event in pg.event.get():
             if event.type == QUIT:
@@ -65,4 +48,3 @@ def init_game():
 
         pg.display.flip()
         clock.tick(60)
-        # print(round(pg.time.get_ticks()//1000))

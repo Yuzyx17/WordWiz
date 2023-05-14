@@ -12,7 +12,7 @@ class Player():
     def __init__(self, board: Board):
         self.board = board
         self.state = self.board.state
-        self.role = None
+        self.word = []
         self.score = 0
     
     def codebreaker(self):
@@ -48,6 +48,7 @@ class Player():
                             letter.translate(vec2(tilesize.x*index, 100+(self.state.attempt*tilesize.y)))
                             letter.lock = True
                             self.board.letter_used.add(letter)   
+                            self.board.letter_hints.add(letter)
                             self.board.click = False
                             break
                         
@@ -78,16 +79,20 @@ class Player():
             print(f'YOU LOSE! word is {self.state.code_string}')
             self.score -= 10
             self.board.ai.score += 5
+            self.board.display_correct_word()
             self.end()
 
     def giveup(self):
-        print(f'YOU LOSE! word is {self.state.code_string}')
-        self.score -= 5
-        self.board.ai.score += 10
-        self.end()
+        if self.board.turn and self.board.mode:
+            print(f'YOU LOSE! word is {self.state.code_string}')
+            self.score -= 5
+            self.board.ai.score += 10
+            self.board.display_correct_word()
+            self.end()
 
     def end(self):
-        self.board.update_turn(self.board.pool)
+        self.board.update_turn()
+        self.board.ai.word = ""
         self.board.change_turn(turns.PMM)
         self.board.phase += 1
         self.state.reset()
@@ -95,29 +100,30 @@ class Player():
 
     def mastermind(self):
         self.board.spell = self.state.can_spell_code() 
-        letter: Letter
-        for letter in self.board.letter_pool:         #for letters in the pool
-            if not letter.clicked and letter not in self.board.letter_used:
-                if letter.click(self.board.spell and self.board.click):
-                    #State update
-                    #Gets the index of the letter clicked from pool
-                    attempted_index = self.board.letter_pool.sprites().index(letter)        
-                    #Gets the FIRST empty slot from self.state.guesses[self.attempt]
-                    attempted_index = self.state.spell_code(attempted_index, letter.letter)
-                    #Translate the position of the letter to the empty slot
-                    letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
-                    self.board.letter_used.add(letter)   
-                    self.board.click = False
-                    break
-                    # letter.emulated_click()
+        # letter: Letter
+        # for letter in self.board.letter_pool:         #for letters in the pool
+        #     if not letter.clicked and letter not in self.board.letter_used:
+        #         if letter.click(self.board.spell and self.board.click):
+        #             #State update
+        #             #Gets the index of the letter clicked from pool
+        #             attempted_index = self.board.letter_pool.sprites().index(letter)        
+        #             #Gets the FIRST empty slot from self.state.guesses[self.attempt]
+        #             attempted_index = self.state.spell_code(attempted_index, letter.letter)
+        #             #Translate the position of the letter to the empty slot
+        #             letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+        #             self.board.letter_used.add(letter)   
+        #             self.board.click = False
+        #             break
+        #             # letter.emulated_click()
 
-        for letter in self.board.letter_used:         #for letters used
-            if not letter.clicked:
-                if letter.click(self.board.click):
-                    #State update
-                    attempted_index = self.board.letter_pool.sprites().index(letter)
-                    letter.translate(vec2(tilesize.x*attempted_index, 25))
-                    self.state.undo_code(attempted_index, letter.letter)
-                    self.board.letter_used.remove(letter) 
-                    self.board.click = False
-                    break
+        # for letter in self.board.letter_used:         #for letters used
+        #     if not letter.clicked:
+        #         if letter.click(self.board.click):
+        #             #State update
+        #             attempted_index = self.board.letter_pool.sprites().index(letter)
+        #             letter.translate(vec2(tilesize.x*attempted_index, 25))
+        #             self.state.undo_code(attempted_index, letter.letter)
+        #             self.board.letter_used.remove(letter) 
+        #             self.board.click = False
+        #             break
+        

@@ -1,6 +1,7 @@
 from src.constants import *
 from src.ai.codebreaker import Codebreaker
 from src.ai.mastermind import Mastermind
+from src.utils.generator import LetterGenerator
 from src.utils.trie import Trie
 from timeit import default_timer as timer
 from collections import defaultdict
@@ -40,9 +41,12 @@ def sampleCB(word = "glass", pool = "gonianless"):
     print('finish at:', str(end - start))
 
 
-def sampleMM(pool="jzkjsdausz"):
+def sampleMM():
     trie = Trie()
     trie.save()
     trie.load()
-    ai = Mastermind(trie, pool)
-    print(ai.generateWord())
+    ai = Mastermind(trie)
+    word = ai.generateWord()
+    gen = LetterGenerator(trie, word)
+    pool = ''.join(gen.letter_generate()['pool'])
+    print(pool)

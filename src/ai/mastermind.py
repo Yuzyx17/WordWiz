@@ -4,7 +4,7 @@ from collections import defaultdict, Counter
 import random as rd
 
 class Mastermind():
-    def __init__(self, node: Trie, pool: str) -> None:
+    def __init__(self, node: Trie, pool: str = "abcdefghijklmnopqrstuvwxyz") -> None:
         self.node = node
         self.pool = [letter for letter in pool]
         self.pool_stack = []
@@ -46,9 +46,9 @@ class Mastermind():
                     word = self.convertWord() 
                     if word not in self.candidates:
                         self.candidates[word] = self.globalScore
-                self.pool_stack.append(self.pool.pop(self.pool.index(letter)))
+                # self.pool_stack.append(self.pool.pop(self.pool.index(letter)))
                 self.search(current_node, depth+1)
-                self.pool.append(self.pool_stack.pop(self.pool_stack.index(letter)))
+                # self.pool.append(self.pool_stack.pop(self.pool_stack.index(letter)))
             self.globalScore -= current_node.frequency() if current_node is not None else 0
             self.word.pop()
     

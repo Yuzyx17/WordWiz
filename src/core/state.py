@@ -128,7 +128,6 @@ class BoardState():
     def accept_guess(self):
         if self.get_guess_attempts() == 0 or self.code_string == "":
             return False
-        
         word_guess = self.wordify_guess(self.attempt)
         if not self.verify_guess(): return False
         if word_guess in self.attempts: return False
