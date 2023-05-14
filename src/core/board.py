@@ -9,21 +9,24 @@ from src.constants import *
 class Board():
     def __init__(self, canvas):
         self.state = BoardState()
-        self.state.word_string = "hedge"
+        self.state.code_string = "hedge"
         self.canvas = canvas
-        self.spell = True   #if player is allowed to spell
-        self.click = True   #for detecting clicks; communicates from events
+        self.spell = False   #if player is allowed to spell
+        self.click = False   #for detecting clicks; communicates from events
         self.start_game = False
         self.pool = ""
 
         self.player = Player(self)
         self.ai = AI(self)
 
+        self.time = 0
         self.round = 1
+        self.phase = 0
 
+        #MASTERMIND ALWAYS STARTS FIRST
         self.turn = False #True = Player; False = AI
-        self.mode = False #True = CB; False = MM
-        
+        self.mode = False #True = CB; False = MM #DEFAULT FALSE
+         
         self.letter_pool = pg.sprite.Group()
         self.letter_used = pg.sprite.Group()
         self.letter_hints = pg.sprite.Group()
@@ -67,6 +70,7 @@ class Board():
 
         self.letter_pool.empty()
         self.letter_used.empty()
+        self.letter_hints.empty()
 
         for i in range(10):
             self.state.pool[i] = self.pool[i]
@@ -84,29 +88,28 @@ class Board():
         self.letter_used.update()
         self.letter_hints.update()
         
-        #Player Role
-        #CB             #MM
-        #Phase 1        #Phase 3
-                                #Block
-        #Phase 2        #Phase 4
-                                        #Round
-        #Phase 3        #Phase 1
-                                #Block
-        #Phase 4        #Phase 2
+        if self.phase == 4:
+            self.phase = 0
+            self.round += 1
+            print(f'Round: {self.round}')
 
-        if not self.turn and not self.mode:             
-            self.ai.mastermind(self.pool)                
+        if not self.turn and not self.mode:          
+            pass            
         elif self.turn and self.mode:                                       
             self.player.codebreaker()           
-        elif self.turn and not self.mode:           
+        elif self.turn and not self.mode:        
             self.player.mastermind()            
-        elif not self.turn and self.mode:                                       
-            self.ai.codebreaker()               
-
+        elif not self.turn and self.mode and self.time % self.ai.speed == 0 :    
+            self.time = 0                                   
+            self.ai.codebreaker()        
 
         #TEMPORARY FEEDBACK
         letter : Letter
-        if self.state.verify_guess():
+        if self.state.verify_guess() and self.mode:
+            for letter in self.letter_used:
+                letter.fill = GREEN
+                letter.draw()
+        elif self.state.verify_code() and not self.mode:
             for letter in self.letter_used:
                 letter.fill = GREEN
                 letter.draw()
@@ -119,18 +122,37 @@ class Board():
             if letter not in self.letter_used:
                 letter.fill = WHITE
                 letter.draw()
+        for letter in self.letter_hints:
+            letter.fill = GREEN
+            letter.draw()
 
         self.update()
+        self.time += 1
+        if self.time % 1000 == 0:
+            self.time = 0
 
     def guess(self): #This is attached to the button in wordwiz.py as a callback
-
+        if not self.turn and not self.mode:
+            self.update_turn(self.pool)
+            self.ai.mastermind(self.pool)
+            self.state.code_string = self.ai.agent_mastermind.generateWord()
+            self.turn = True
+            self.mode = True
+            self.phase += 1
+            print("Begin! now Player")
         if self.turn and self.mode:
             if self.state.accept_guess():
                 self.reset_pool()
+        if self.turn and not self.mode:
+            if self.state.accept_code():
+                self.reset_pool()
+                self.turn = False
+                self.mode = True
+                self.phase += 1
+                self.ai.cb_init(self.pool)   
+                print("Begin! now AI")
         if not self.turn and self.mode:
-            candidate = self.ai.agent_codebreaker.think()
-            self.ai.agent_codebreaker.update_candidate()
-            self.ai.update_codebreaker(self.state.hints)
+            ...
 
     def draw_board(self):
         ...
@@ -144,12 +166,26 @@ class Board():
             print("Congratulations")
             self.state.win = False
             self.update_turn(self.pool)
+            self.turn = True
+            self.mode = False
+            self.phase += 1
         
     def on_lose_as_codebreaker(self):
         if self.state.get_guess_attempts() == 0:
-            print(f'YOU LOSE! word is {self.state.word_string}')
+            print(f'YOU LOSE! word is {self.state.code_string}')
             self.state.reset()
             self.update_turn(self.pool)
+            self.turn = True
+            self.mode = False
+            self.phase += 1
+
+    def give_up(self):
+        print(f'YOU LOSE! word is {self.state.code_string}')
+        self.state.reset()
+        self.update_turn(self.pool)
+        self.turn = True
+        self.mode = False
+        self.phase += 1
 
     def start(self):
         #set role of player

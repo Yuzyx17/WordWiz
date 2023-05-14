@@ -7,7 +7,8 @@ class Trie():
         self.nodes = TrieNode()
 
     #insert a word in the Trie
-    def insert(self, word):
+    def insert(self, word: str):
+        word = word.lower()
         node: TrieNode = self.nodes
         nodes = node.nodes
         for letter in word:
@@ -21,6 +22,7 @@ class Trie():
 
     #search for word in Trie
     def search(self, word):
+        word = word.lower()
         node: TrieNode = self.nodes
         nodes = node.nodes
         for letter in word:
@@ -46,6 +48,7 @@ class Trie():
             valid_words = list(word_file.read().split())
             word_file.close()
         for word in valid_words:
+            word = word.lower()
             self.insert(word)
 
         with open(r"assets/data/trie.dat", "wb") as output_file:

@@ -25,8 +25,13 @@ def init_game():
     # button.list = ["helloworld"]                        #Changing args
     button.rect.x, button.rect.y = vec2(450, 250)       #positioning the button
     button.set_text("Click Me!", pg.Color(255, 255, 0))
+    giveup = Button(vec2(200, 50), (100, 100, 250))
+    giveup.on_click(board.give_up)
+    giveup.rect.x, giveup.rect.y = vec2(350, 325)
+    giveup.set_text("Reset", pg.Color(255, 0, 0))
     grp = pg.sprite.Group()     
     grp.add(button) #adding button to sprite group for cursor handling
+    grp.add(giveup)
     #END SAMPLE BUTTON
 
     cursor = Cursor(10)
@@ -46,6 +51,8 @@ def init_game():
                 cursor.hand([board.letter_used, board.letter_pool, grp])
             else:
                 cursor.hand([board.letter_used, grp])
+        else:
+            cursor.hand([grp])    
 
         for event in pg.event.get():
             if event.type == QUIT:
@@ -58,3 +65,4 @@ def init_game():
 
         pg.display.flip()
         clock.tick(60)
+        # print(round(pg.time.get_ticks()//1000))
