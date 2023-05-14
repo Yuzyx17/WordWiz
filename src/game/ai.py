@@ -68,10 +68,10 @@ class AI():
             self.cb_end()
 
     def cb_end(self):
-        self.board.update_turn(self.board.pool)
+        # self.board.update_turn(self.board.pool)
         self.board.change_turn(turns.AMM)
         self.board.phase += 1
-        self.state.reset()
+        # self.state.reset()
         print("Begin! now AI Mastermind")
         
     def update_codebreaker(self, hints):
