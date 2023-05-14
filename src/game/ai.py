@@ -55,22 +55,21 @@ class AI():
     def cb_lost(self):
         if self.state.get_guess_attempts() == 0:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.board.turn = False
-            self.board.mode = False
-            self.board.phase += 1
-            self.state.reset()
-            self.board.update_turn(self.pool)
+            self.cb_end()
 
     def cb_win(self):
         if self.state.win:
             print("Congratulations")
-            self.state.win = False
-            self.board.turn = False
-            self.board.mode = False
-            self.board.phase += 1
-            self.state.reset()
-            self.board.update_turn(self.pool)
+            self.cb_end()
 
+    def cb_end(self):
+        self.board.turn = False
+        self.board.mode = False
+        self.board.phase += 1
+        self.state.reset()
+        self.board.update_turn(self.pool)
+        print("Begin! now AI Mastermind")
+        
     def update_codebreaker(self, hints):
         self.board.reset_pool()
         self.guess = ""

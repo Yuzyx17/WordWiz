@@ -136,10 +136,11 @@ class Board():
             self.update_turn(self.pool)
             self.ai.mastermind(self.pool)
             self.state.code_string = self.ai.agent_mastermind.generateWord()
+            print(self.state.code_string)
             self.turn = True
             self.mode = True
             self.phase += 1
-            print("Begin! now Player")
+            print("Begin! now Player Codebreaker")
         if self.turn and self.mode:
             if self.state.accept_guess():
                 self.reset_pool()
@@ -150,7 +151,7 @@ class Board():
                 self.mode = True
                 self.phase += 1
                 self.ai.cb_init(self.pool)   
-                print("Begin! now AI")
+                print("Begin! now AI Codebreaker")
         if not self.turn and self.mode:
             ...
 
@@ -164,28 +165,24 @@ class Board():
     def on_win_as_codebreaker(self):
         if self.state.win:
             print("Congratulations")
-            self.state.win = False
-            self.update_turn(self.pool)
-            self.turn = True
-            self.mode = False
-            self.phase += 1
+            self.reset()
         
     def on_lose_as_codebreaker(self):
         if self.state.get_guess_attempts() == 0:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.state.reset()
-            self.update_turn(self.pool)
-            self.turn = True
-            self.mode = False
-            self.phase += 1
+            self.reset()
 
     def give_up(self):
         print(f'YOU LOSE! word is {self.state.code_string}')
+        self.reset()
+
+    def reset(self):
         self.state.reset()
         self.update_turn(self.pool)
         self.turn = True
         self.mode = False
         self.phase += 1
+        print("Begin! now Player Mastermind")
 
     def start(self):
         #set role of player
