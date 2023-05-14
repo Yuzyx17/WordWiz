@@ -61,7 +61,37 @@ class Player():
                     self.board.letter_used.remove(letter) 
                     self.board.click = False
                     break
-                
+        
+        self.win()
+        self.lose()
+
+    def win(self):
+        if self.state.win:
+            print("Congratulations")
+            self.score += 10
+            self.score += self.state.get_guess_attempts() * 5
+            self.board.ai.score -= 5
+            self.end()
+
+    def lose(self):
+        if self.state.get_guess_attempts() == 0 and not self.state.win:
+            print(f'YOU LOSE! word is {self.state.code_string}')
+            self.score -= 10
+            self.board.ai.score += 5
+            self.end()
+
+    def giveup(self):
+        print(f'YOU LOSE! word is {self.state.code_string}')
+        self.score -= 5
+        self.board.ai.score += 10
+        self.end()
+
+    def end(self):
+        self.board.update_turn(self.board.pool)
+        self.board.change_turn(turns.PMM)
+        self.board.phase += 1
+        self.state.reset()
+        print("Begin! now Player Mastermind")
 
     def mastermind(self):
         self.board.spell = self.state.can_spell_code() 

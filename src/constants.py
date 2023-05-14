@@ -3,6 +3,7 @@ import pygame as pg
 from pygame import Font as ft
 from pygame import Vector2 as vec2
 from pygame import Color
+from enum import Enum
 
 WHITE = Color(255, 255, 255)
 BLACK = Color(0, 0, 0)
@@ -30,3 +31,9 @@ def getLetterIndex(letter):
 
 def defaultValue():
     return None
+
+class turns(Enum):
+    PCB = 1
+    PMM = 2
+    ACB = 3
+    AMM = 4

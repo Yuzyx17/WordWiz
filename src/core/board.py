@@ -13,6 +13,7 @@ class Board():
         self.canvas = canvas
         self.spell = False   #if player is allowed to spell
         self.click = False   #for detecting clicks; communicates from events
+        self.cont = False
         self.start_game = False
         self.pool = ""
 
@@ -136,9 +137,7 @@ class Board():
             self.update_turn(self.pool)
             self.ai.mastermind(self.pool)
             self.state.code_string = self.ai.agent_mastermind.generateWord()
-            print(self.state.code_string)
-            self.turn = True
-            self.mode = True
+            self.change_turn(turns.PCB)
             self.phase += 1
             print("Begin! now Player Codebreaker")
         if self.turn and self.mode:
@@ -147,8 +146,7 @@ class Board():
         if self.turn and not self.mode:
             if self.state.accept_code():
                 self.reset_pool()
-                self.turn = False
-                self.mode = True
+                self.change_turn(turns.ACB)
                 self.phase += 1
                 self.ai.cb_init(self.pool)   
                 print("Begin! now AI Codebreaker")
@@ -159,30 +157,28 @@ class Board():
         ...
 
     def update(self):
-        self.on_win_as_codebreaker()
-        self.on_lose_as_codebreaker()
+        ...
 
-    def on_win_as_codebreaker(self):
-        if self.state.win:
-            print("Congratulations")
-            self.reset()
-        
-    def on_lose_as_codebreaker(self):
-        if self.state.get_guess_attempts() == 0:
-            print(f'YOU LOSE! word is {self.state.code_string}')
-            self.reset()
+    def change_turn(self, turn: turns):
+        self.get_scores()
+        match turn:
+            case turns.PCB:
+                self.turn = True
+                self.mode = True
+            case turns.PMM:
+                self.turn = True
+                self.mode = False
+            case turns.ACB:
+                self.turn = False
+                self.mode = True
+            case turns.AMM:
+                self.turn = False
+                self.mode = False
+            case other:
+                raise("ERROR AWIT")
 
-    def give_up(self):
-        print(f'YOU LOSE! word is {self.state.code_string}')
-        self.reset()
-
-    def reset(self):
-        self.state.reset()
-        self.update_turn(self.pool)
-        self.turn = True
-        self.mode = False
-        self.phase += 1
-        print("Begin! now Player Mastermind")
+    def get_scores(self):
+        print(f'Player: {self.player.score}\nAI: {self.ai.score}')
 
     def start(self):
         #set role of player

@@ -26,7 +26,7 @@ def init_game():
     button.rect.x, button.rect.y = vec2(450, 250)       #positioning the button
     button.set_text("Click Me!", pg.Color(255, 255, 0))
     giveup = Button(vec2(200, 50), (100, 100, 250))
-    giveup.on_click(board.give_up)
+    giveup.on_click(board.player.giveup)
     giveup.rect.x, giveup.rect.y = vec2(350, 325)
     giveup.set_text("Reset", pg.Color(255, 0, 0))
     grp = pg.sprite.Group()     
