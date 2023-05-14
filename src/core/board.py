@@ -154,7 +154,7 @@ class Board():
             if letter not in self.letter_used:
                 letter.fill = WHITE
                 letter.draw()
-        for letter in self.letter_hints:
+        for letter in self.letter_hints.sprites() + self.correct_word.sprites():
             letter.fill = GREEN
             letter.draw()
 
