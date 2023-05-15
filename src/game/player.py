@@ -33,7 +33,16 @@ class Player():
                     self.board.letter_used.add(letter)   
                     self.board.click = False
                     break
-                    # letter.emulated_click()
+                elif letter.letter == self.board.input_key:
+                    attempted_index = self.board.letter_pool.sprites().index(letter)        
+                    #Gets the FIRST empty slot from self.state.guesses[self.attempt]
+                    attempted_index = self.state.spell_guess(attempted_index, letter.letter)
+                    #Translate the position of the letter to the empty slot
+                    letter.emulated_click()
+                    letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+                    self.board.letter_used.add(letter)   
+                    self.board.input_key = ""
+                    break
                 
         for letter in self.board.letter_used:         #for letters used
             if not letter.clicked:
@@ -45,6 +54,19 @@ class Player():
                     self.board.letter_used.remove(letter) 
                     self.board.click = False
                     break
+
+        if self.board.input_key == None and len(self.board.letter_used.sprites()) > 0:
+            #State update
+            attempted_index = self.board.letter_pool.sprites().index(
+                self.board.letter_used.sprites()[len(self.board.letter_used.sprites())-1]
+            )
+            letter = self.board.letter_pool.sprites()[attempted_index]
+            if not letter.lock:
+                letter.emulated_click()
+                letter.translate(vec2(tilesize.x*attempted_index, 25))
+                self.state.undo_guess(attempted_index, letter.letter)
+                self.board.letter_used.remove(letter) 
+            self.board.input_key = ""
         
         self.win()
         self.lose()
@@ -59,8 +81,8 @@ class Player():
                         if (letter.letter == hint and 
                             self.state.guesses[self.state.attempt][index] == ' '):
                             self.state.guesses[self.state.attempt][index] = {self.board.letter_pool.sprites().index(letter) : hint}
-                            letter.transition_speed = letter.transition_speed//4
-                            letter.transition_snap = letter.transition_snap//4
+                            letter.transition_speed = letter.transition_speed//3
+                            letter.transition_snap = letter.transition_snap//3
                             letter.emulated_click()
                             letter.translate(vec2(tilesize.x*index, 100+(self.state.attempt*tilesize.y)))
                             # letter.lock = True

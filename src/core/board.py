@@ -43,26 +43,18 @@ class Board():
         self.correct_word = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
         
-        self.player_role = TextRenderer(vec2(100, 70))
-        self.player_role.rect.topleft = vec2(SIZE.x - self.player_role.rect.w -20, 0)
-    
-        self.round_text = TextRenderer(vec2(100, 50))
-        self.round_text.rect.topleft = vec2(500, 50)
-        self.round_text.change_text(f"Round: {self.round}")
+        self.player_role = TextRenderer(vec2(100, 70), pos=vec2(520, 0))
+        self.round_text = TextRenderer(vec2(100, 50), pos=vec2(500, 50), text=f"Round: {self.round}")
+        self.scores = TextRenderer(vec2(100, 100), pos=vec2(500, 50))
 
-        self.scores = TextRenderer(vec2(100, 100))
-        self.scores.rect.topleft = vec2(500, 50)
-
-        self.wl = TextRenderer(vec2(350, 100))
-        self.wl.change_text("Your role in first round?")
-        self.wl.rect.topleft = vec2(145, 340)
-        self.text_group.add(self.wl)
+        self.wl = TextRenderer(vec2(350, 100), pos=vec2(145, 340))
 
         self.gen = Button(vec2(150, 75), pg.Color(100, 150, 175))
         self.gen.on_click(self.guess)
         self.gen.set_text("")
         self.gen.rect.topleft = vec2(375, 200)
 
+        self.input_key = ""
         self.start_init()
 
     # STOP HERE
@@ -70,6 +62,11 @@ class Board():
     def start_init(self):
         self.buttons.empty()
         self.text_group.empty()
+        self.word_guessed.empty()
+        self.letter_pool.empty()
+        self.letter_used.empty()
+        self.letter_hints.empty()
+        self.state.reset()
         text = TextRenderer(vec2(350, 100))
         text.change_text("Your role in first round?")
         text.rect.topleft = vec2(145, 100)
@@ -89,17 +86,17 @@ class Board():
 
     def restart(self):
         self.start_game = False
-        self.round = 0
-        self.ai.score = 0
-        self.player.score = 0
-        self.start_init()
-        text = ""
         if self.ai.score > self.player.score:
             text = f"AI WIN"
         elif self.ai.score < self.player.score:
             text = f"PLAYER WIN"
         else:
             text = "DRAW"
+        self.round = 0
+        self.ai.score = 0
+        self.player.score = 0
+        self.start_init()
+        text = ""
         self.wl.change_text(f"{text}")
         self.text_group.add(self.wl)
         
@@ -108,7 +105,6 @@ class Board():
         self.buttons.empty()
         self.text_group.empty()
         self.start_game = True
-        
 
         res = Button(vec2(150, 75), pg.Color(250, 100, 125))
         res.on_click(self.player.giveup)
@@ -333,7 +329,7 @@ class Board():
                 self.turn = True
                 self.mode = False
                 self.player_role.change_text(f"Player\nMastermind")
-                self.gen.change_text("SET WORD")
+                self.gen.change_text(f"SET WORD\n(Type)")
             case turns.ACB:
                 self.turn = False
                 self.mode = True
@@ -348,8 +344,8 @@ class Board():
                 raise("ERROR AWIT")
 
     def events(self, event):
-        if self.turn and not self.mode:
-            if event.type == pg.KEYDOWN:
+        if event.type == pg.KEYDOWN:
+            if self.turn and not self.mode:
                 if event.unicode.isalpha():
                     if self.spell:
                         self.state.spell_code(len(self.player.word), event.unicode)
@@ -364,3 +360,11 @@ class Board():
                         self.letter_used.remove(self.letter_used.sprites()[-1])
                         self.player.word.pop()
                         print(self.state.code)
+            if self.turn and self.mode:
+                if event.unicode.isalpha():
+                    if self.spell:
+                        self.input_key = event.unicode
+                elif event.key == pg.K_BACKSPACE:
+                    self.input_key = None
+            if event.key == pg.K_RETURN:
+                self.guess()
