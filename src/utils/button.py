@@ -13,6 +13,8 @@ class Button(pg.sprite.Sprite):
         self.returnValue = None
 
         self.click = False
+        self.change = False
+        self.text = ""
         self.image.fill(self.fill)
     
     def update(self, click):
@@ -20,14 +22,22 @@ class Button(pg.sprite.Sprite):
         if self.click and self.rect.collidepoint(pg.mouse.get_pos()):
             self.returnValue = self.callback(*self.list, **self.dict)
             self.click = False
+        if self.change:
+            self.set_text(self.text)
+            self.change = False
         self.click = False
 
     def emulate_click(self):
         self.click = True
 
+    def change_text(self, text):
+        self.text = text
+        self.change = True
+
     def set_text(self, text, color = BLACK):
         self.image.fill(self.fill)
-        text = pixelfont_sm.render(text, True, color)
+        self.text = text
+        text = pixelfont_sm.render(self.text, True, color)
         text_rect = text.get_rect()
         text_rect.centerx = self.rect.w//2
         text_rect.centery = self.rect.h//2

@@ -34,7 +34,7 @@ ATTEMPTS_REWARD = 5
 
 
 AI_WORD_POOL_DIFFICULTY = 150
-PLAYER_POOL_DIFFICULTY = 250
+PLAYER_POOL_DIFFICULTY = 200
 
 def getLetterIndex(letter):
     return ord(letter) - ord('a')

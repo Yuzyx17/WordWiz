@@ -30,12 +30,7 @@ class Board():
         self.round = 1
         self.phase = 0
 
-        self.round_text = TextRenderer(vec2(200, 50))
-        self.round_text.change_text(f"Round: {self.round}")
-        self.round_text.rect.x = SIZE.x//2 - self.round_text.rect.w//2
-
         self.text_group = pg.sprite.Group()
-        self.text_group.add(self.round_text)
         #MASTERMIND ALWAYS STARTS FIRST
         self.turn = False #True = Player; False = AI
         self.mode = False #True = CB; False = MM #DEFAULT FALSE
@@ -46,66 +41,71 @@ class Board():
         self.word_guessed = pg.sprite.Group()
         self.correct_word = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
-
-        # ADD HERE
-        self.question_text = pg.sprite.Group()
-        self.scores_record = pg.sprite.Group()
         
-        self.player_role = pg.sprite.Group()
-        self.player_role_text = TextRenderer(vec2(100, 100))
-        self.player_role_text.rect.topleft = vec2(500, 20)
+        self.player_role = TextRenderer(vec2(100, 70))
+        self.player_role.rect.topleft = vec2(SIZE.x - self.player_role.rect.w -20, 0)
+    
+        self.round_text = TextRenderer(vec2(100, 50))
+        self.round_text.rect.topleft = vec2(500, 50)
+        self.round_text.change_text(f"Round: {self.round}")
 
+        self.scores = TextRenderer(vec2(100, 100))
+        self.scores.rect.topleft = vec2(500, 50)
 
-        self.round_record = pg.sprite.Group()
-        self.round_text = TextRenderer(vec2(100, 100))
-        self.round_text.rect.topleft = vec2(500, 0)
-        self.round_text.change_text(f'Round: {self.round}')
-        self.round_record.add(self.round_text)
+        self.gen = Button(vec2(150, 75), pg.Color(100, 150, 175))
+        self.gen.on_click(self.guess)
+        self.gen.set_text("")
+        self.gen.rect.topleft = vec2(375, 200)
 
         self.start_init()
 
-    def start_init(self):
-        self.buttons.empty()
-        # interface for player to choose cb or mm
-        self.player_role_first_round()
-        
-        self.game_init()
-
     # STOP HERE
     # if cb, then 
-    def player_role_first_round(self):
-        # self.question_text.empty()
+    def start_init(self):
+        self.buttons.empty()
+        self.text_group.empty()
         text = TextRenderer(vec2(350, 100))
         text.change_text("Your role in first round?")
         text.rect.topleft = vec2(145, 100)
-        self.question_text.add(text)
+        self.text_group.add(text)
 
         cb_button = Button(vec2(150, 50), pg.Color(116,216,26))
-        cb_button.on_click(self.guess)
+        cb_button.on_click(self.on_cb)
         cb_button.set_text("Codebreaker")
         cb_button.rect.topleft = vec2(100, 250)
         self.buttons.add(cb_button)
 
         mm_button = Button(vec2(150, 50), pg.Color(220,53,69))
-        mm_button.on_click(self.player.mastermind)
+        mm_button.on_click(self.on_mm)
         mm_button.set_text("Mastermind")
         mm_button.rect.topleft = vec2(400, 250)
         self.buttons.add(mm_button)
 
     def game_init(self):
         self.buttons.empty()
-        gen = Button(vec2(150, 75), pg.Color(100, 150, 175))
-        gen.on_click(self.guess)
-        gen.set_text("Click Me")
-        gen.rect.topleft = vec2(375, 200)
+        self.text_group.empty()
+        self.start_game = True
+        
 
         res = Button(vec2(150, 75), pg.Color(250, 100, 125))
         res.on_click(self.player.giveup)
         res.set_text("Give Up")
         res.rect.topleft = vec2(375, 300)
 
-        self.buttons.add(gen)
+        self.buttons.add(self.gen)
         self.buttons.add(res)
+        self.text_init()
+
+    def on_mm(self):
+        self.change_turn(turns.PMM)
+        self.game_init()
+        self.pl_mm_init()
+        
+
+    def on_cb(self):
+        self.change_turn(turns.PCB)
+        self.game_init()
+        self.ai_mm_init()
 
     def render_hints(self):
         word = self.state.wordify_guess(self.state.attempt-1)
@@ -118,6 +118,11 @@ class Board():
                 letter.fill = GREEN
             letter.draw()
             self.word_guessed.add(letter)
+
+    def text_init(self):
+        self.text_group.add(self.player_role)
+        self.text_group.add(self.scores)
+        self.text_group.add(self.round_text)
 
     #for each round
     def update_turn(self, pool = None):
@@ -156,53 +161,48 @@ class Board():
             self.letter_pool.add(letter)
 
     def draw(self):
-        self.word_guessed.draw(self.canvas)     #drawing guesses
-        self.letter_pool.draw(self.canvas)      #drawing pool of letters
-        self.letter_used.draw(self.canvas)      #drawing spell attempt
-        self.letter_hints.draw(self.canvas)
-        self.correct_word.draw(self.canvas)
         self.text_group.draw(self.canvas)
         self.buttons.draw(self.canvas)
-        self.question_text.draw(self.canvas) # ADD HERE
-        self.scores_record.draw(self.canvas) # ADD HERE
-        self.round_record.draw(self.canvas) # ADD HERE
-        self.player_role.draw(self.canvas) # ADD HERE
-
-        self.letter_pool.update()
-        self.letter_used.update()
-        self.letter_hints.update()
-        self.correct_word.update()
         self.text_group.update()
         self.buttons.update(self.click)
-        self.question_text.update() # ADD HERE
-        self.scores_record.update() # ADD HERE
-        self.round_record.update() # ADD HERE
-        self.player_role.update() # ADD HERE
-        
-        if self.phase == 4:
-            self.phase = 0
-            self.round += 1
-<<<<<<< HEAD
-            self.round_text.change_text(f"Round: {self.round}")
-=======
-            # ADD HERE
-            self.round_text.change_text(f'Round: {self.round}')
-            self.round_record.add(self.round_text)
 
->>>>>>> eunice-wordwiz/master
-            print(f'Round: {self.round}')
+        if self.start_game:
+            self.word_guessed.draw(self.canvas)     #drawing guesses
+            self.letter_pool.draw(self.canvas)      #drawing pool of letters
+            self.letter_used.draw(self.canvas)      #drawing spell attempt
+            self.letter_hints.draw(self.canvas)
+            self.correct_word.draw(self.canvas)
 
-        if not self.turn and not self.mode:          
-            pass            
-        elif self.turn and self.mode:                                       
-            self.player.codebreaker()           
-        elif self.turn and not self.mode:        
-            self.player.mastermind()            
-        elif not self.turn and self.mode and self.time % self.ai.speed == 0 :    
-            self.time = 0                                   
-            self.ai.codebreaker()        
 
-        #TEMPORARY FEEDBACK
+            self.letter_pool.update()
+            self.letter_used.update()
+            self.letter_hints.update()
+            self.correct_word.update()
+            
+            if self.phase == 4:
+                self.phase = 0
+                self.round += 1
+                self.round_text.change_text(f'Round: {self.round}')
+
+            if not self.turn and not self.mode:          
+                pass            
+            elif self.turn and self.mode:                                       
+                self.player.codebreaker()           
+            elif self.turn and not self.mode:        
+                self.player.mastermind()            
+            elif not self.turn and self.mode and self.time % self.ai.speed == 0 :    
+                self.time = 0                                   
+                self.ai.codebreaker()        
+
+            #TEMPORARY FEEDBACK
+            
+            self.color_feedback()
+            self.update()
+            self.time += 1
+            if self.time % 1000 == 0:
+                self.time = 0
+
+    def color_feedback(self):
         letter : Letter
         if self.state.verify_guess() and self.mode:
             for letter in self.letter_used:
@@ -232,71 +232,58 @@ class Board():
             letter.fill = GREEN
             letter.draw()
 
-        self.update()
-        self.time += 1
-        if self.time % 1000 == 0:
-            self.time = 0
+    def ai_mm_init(self):
+        self.ai.mastermind()
 
-    def guess(self): #This is attached to the button in wordwiz.py as a callback
-        if not self.turn and not self.mode:
-            self.ai.mastermind()
+        #self.update_turn(self.pool)
+        #self.ai.mastemrind(self.pool)
+        self.correct_word.empty()
+        self.ai.word = self.ai.agent_mastermind.generateWord()
+        self.pool_generator.mmWord = [letter for letter in self.ai.word]
+        self.pool = None
+        self.pool_generator.min = AI_WORD_POOL_DIFFICULTY
+        self.pool_generator.limit = 150
+        while self.pool == None:
+            generated = self.pool_generator.letter_generate()
+            if generated:
+                self.pool = ''.join(generated['pool'])
+                del generated
+        self.update_turn(self.pool)
+        self.change_turn(turns.PCB)
+        self.state.code_string = self.ai.word
+        self.phase += 1
 
-            #self.update_turn(self.pool)
-            #self.ai.mastemrind(self.pool)
-            self.correct_word.empty()
-            self.ai.word = self.ai.agent_mastermind.generateWord()
-            self.pool_generator.mmWord = [letter for letter in self.ai.word]
+    def pl_mm_init(self):
+        #PLAYER MASTERMIND
+        if self.state.accept_code():
+            self.pool_generator.mmWord = [letter for letter in self.state.code_string]
             self.pool = None
-            self.pool_generator.min = AI_WORD_POOL_DIFFICULTY
-            self.pool_generator.limit = 150
+            self.pool_generator.min = PLAYER_POOL_DIFFICULTY
+            self.pool_generator.limit = 5000
             while self.pool == None:
                 generated = self.pool_generator.letter_generate()
                 if generated:
                     self.pool = ''.join(generated['pool'])
-                    print(generated['candidate words'])
-                    print(generated['word count'])
                     del generated
             self.update_turn(self.pool)
-            self.change_turn(turns.PCB)
-            self.state.code_string = self.ai.word
-            self.phase += 1
 
-            # ADD HERE
-            self.player_role.empty()
-            self.player_role_text.change_text("Codebreaker")
-            self.player_role.add(self.player_role_text)
-            print("Begin! now Player Codebreaker")
+            #self.reset_pool()
+            self.change_turn(turns.ACB)
+            self.state.code_string = ''.join(self.player.word)
+            self.phase += 1
+            self.ai.cb_init(self.pool)   
+            self.correct_word.empty()
+
+    def guess(self): #This is attached to the button in wordwiz.py as a callback
+        if not self.turn and not self.mode:
+            self.ai_mm_init()
 
         if self.turn and self.mode:
             if self.state.accept_guess():
                 self.reset_pool()
                 self.player.get_hints()
         if self.turn and not self.mode:
-            #PLAYER MASTERMIND
-            if self.state.accept_code():
-                self.pool_generator.mmWord = [letter for letter in self.state.code_string]
-                self.pool = None
-                self.pool_generator.min = PLAYER_POOL_DIFFICULTY
-                self.pool_generator.limit = 5000
-                while self.pool == None:
-                    generated = self.pool_generator.letter_generate()
-                    if generated:
-                        self.pool = ''.join(generated['pool'])
-                        del generated
-                self.update_turn(self.pool)
-
-                #self.reset_pool()
-                self.change_turn(turns.ACB)
-                self.state.code_string = ''.join(self.player.word)
-                self.phase += 1
-                self.ai.cb_init(self.pool)   
-                self.correct_word.empty()
-
-                # ADD HERE
-                self.player_role.empty()
-                self.player_role_text.change_text("Mastermind")
-                self.player_role.add(self.player_role_text)
-                print("Begin! now AI Codebreaker")
+            self.pl_mm_init()
         if not self.turn and self.mode:
             ...
 
@@ -311,30 +298,30 @@ class Board():
         ...
 
     def change_turn(self, turn: turns):
-        self.get_scores()
+        self.scores.change_text(f'Player: {self.player.score}\nAI: {self.ai.score}')
         match turn:
             case turns.PCB:
                 self.turn = True
                 self.mode = True
+                self.player_role.change_text(f"Player\nCodebreaker")
+                self.gen.change_text("GUESS!")
             case turns.PMM:
                 self.turn = True
                 self.mode = False
+                self.player_role.change_text(f"Player\nMastermind")
+                self.gen.change_text("SET WORD")
             case turns.ACB:
                 self.turn = False
                 self.mode = True
+                self.player_role.change_text(f"AI\nCodebreaker")
+                self.gen.change_text("CONTINUE")
             case turns.AMM:
                 self.turn = False
                 self.mode = False
+                self.player_role.change_text(f"AI\nMastermind")
+                self.gen.change_text("CONTINUE")
             case other:
                 raise("ERROR AWIT")
-
-    def get_scores(self):
-        self.scores_record.empty() # dat ko pa iempty yung sprite group neto?
-        text = TextRenderer(vec2(100, 100))
-        text.rect.topleft = vec2(500, 50)
-        text.change_text(f'Player: {self.player.score}\nAI: {self.ai.score}')
-        self.scores_record.add(text)
-        # print(f'Player: {self.player.score}\nAI: {self.ai.score}')
 
     def events(self, event):
         if self.turn and not self.mode:

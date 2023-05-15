@@ -40,11 +40,7 @@ class TextRenderer(pg.sprite.Sprite):
     def update(self, color=(15, 15, 15)):
         if not self.setVisible:
             self.image.fill(self.color)
-<<<<<<< HEAD
-        print(self.text)
-=======
         # print(self.text)
->>>>>>> eunice-wordwiz/master
         if self.change:
             self.image.fill(self.color)
             text = pixelfont_sm.render(self.text, True, color)
@@ -54,6 +50,9 @@ class TextRenderer(pg.sprite.Sprite):
             self.image.blit(text, text_rect)
             self.change = False
     
+    def refresh(self):
+        self.change = True
+
     def change_text(self, text):
         self.text = text
         self.change = True

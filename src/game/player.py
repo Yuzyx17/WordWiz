@@ -79,7 +79,7 @@ class Player():
     def lose(self):
         if self.state.get_guess_attempts() == 0 and not self.state.win:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.score -= NO_GUESS_PENALTY
+            self.score += NO_GUESS_PENALTY
             self.board.ai.score += NO_GUESS_REWARD
             self.board.display_correct_word()
             self.end()
@@ -87,7 +87,7 @@ class Player():
     def giveup(self):
         if self.board.turn and self.board.mode:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.score -= NO_GUESS_REWARD
+            self.score += NO_GUESS_REWARD
             self.board.ai.score += NO_GUESS_REWARD
             self.board.display_correct_word()
             self.end()
