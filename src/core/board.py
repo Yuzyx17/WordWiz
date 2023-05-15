@@ -95,7 +95,10 @@ class Board():
             text = f"PLAYER WIN"
         else:
             text = "DRAW"
-        self.round = 0
+        self.update_turn()
+        self.correct_word.empty()
+        self.round = 1
+        self.phase = 0
         self.ai.score = 0
         self.player.score = 0
         self.round_text.rect.topleft = vec2(10, 0)
@@ -298,6 +301,7 @@ class Board():
     def guess(self): #This is attached to the button in wordwiz.py as a callback
         if self.round > self.max_round:
             self.restart()
+            return
         if not self.turn and not self.mode:
             self.ai_mm_init()
         if self.turn and self.mode:
