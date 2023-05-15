@@ -314,9 +314,11 @@ class Board():
             ...
 
     def display_correct_word(self):
+        self.letter_pool.empty()
         for i in range(len(self.state.code_string)):
             letter = Letter(self.state.code_string[i])
-            letter.rect.topleft = get_cor_pos(i)
+            letter.rect.topleft = get_pool_pos(i)
+            letter.rect.top += letter.rect.h//2
             self.correct_word.add(letter)
 
     def update(self):
