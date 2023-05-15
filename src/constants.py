@@ -26,6 +26,16 @@ pixelfont_sm = ft(r'assets/font/pixelfont.ttf', int(tilesize.x)//4)
 
 alpha = 'abcdefghijklmnopqrstuvwxyz'
 
+WORD_GUESSED_PENALTY = -5
+NO_GUESS_PENALTY = -10
+WORD_GUESSED_REWARD = 10
+NO_GUESS_REWARD = 5
+ATTEMPTS_REWARD = 5
+
+
+AI_WORD_POOL_DIFFICULTY = 150
+PLAYER_POOL_DIFFICULTY = 250
+
 def getLetterIndex(letter):
     return ord(letter) - ord('a')
 

@@ -21,6 +21,9 @@ class LetterGenerator():
         # for searching
         self.pool_stack = []
         self.word = []
+        self.limit = 0
+        self.cap = 250
+        self.min = 500
 
     # get 5 random letters in alpha 
     # search if it can generate 100 words
@@ -29,16 +32,21 @@ class LetterGenerator():
     
     def letter_generate(self):
 
-        while True:
+        while self.limit < self.cap:
+            self.limit += 1
             self.generate_pool_letters()
             self.search_word(self.trie.nodes)
-
-            if len(self.candidate_words) >= 100:
+            vowels = [vowel for vowel in list(map(lambda x: x.isalpha(),[letter if letter in "aeiou" else '' for letter in self.pool_letters])) if vowel is True]
+            if len(self.candidate_words) >= self.min and len(vowels) >= 3:
                 self.final_pool_letter['pool']  = self.pool_letters
                 self.final_pool_letter['word count'] = len(self.candidate_words)
                 self.final_pool_letter['candidate words'] = self.candidate_words
+                self.limit = 0
                 return self.final_pool_letter
-
+            self.candidate_words = []
+        self.limit = 0
+        return None
+    
     # get 5 random letters in alpha + mastermind word's letters
     def generate_pool_letters(self):
         self.pool_letters = rd.sample(alpha, 5) + self.mmWord

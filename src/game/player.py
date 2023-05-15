@@ -35,23 +35,6 @@ class Player():
                     break
                     # letter.emulated_click()
                 
-                ##THIS IS FOR FORCED HINT USAGE!
-                hints = OrderedDict(sorted(self.state.hints.items()))
-                for index, hint in hints.items():
-                    if hint and self.state.attempt < 6:
-                        if (letter.letter == hint and 
-                            self.state.guesses[self.state.attempt][index] == ' '):
-                            self.state.guesses[self.state.attempt][index] = {index: hint}
-                            letter.transition_speed = letter.transition_speed//4
-                            letter.transition_snap = letter.transition_snap//4
-                            letter.emulated_click()
-                            letter.translate(vec2(tilesize.x*index, 100+(self.state.attempt*tilesize.y)))
-                            letter.lock = True
-                            self.board.letter_used.add(letter)   
-                            self.board.letter_hints.add(letter)
-                            self.board.click = False
-                            break
-                        
         for letter in self.board.letter_used:         #for letters used
             if not letter.clicked:
                 if letter.click(self.board.click):
@@ -65,28 +48,47 @@ class Player():
         
         self.win()
         self.lose()
-
+    def get_hints(self):
+        ##THIS IS FOR FORCED HINT USAGE!
+        letter: Letter
+        for letter in self.board.letter_pool:         #for letters in the pool
+            if not letter.clicked and letter not in self.board.letter_used:
+                hints = OrderedDict(sorted(self.state.hints.items()))
+                for index, hint in hints.items():
+                    if hint and self.state.attempt < 6:
+                        if (letter.letter == hint and 
+                            self.state.guesses[self.state.attempt][index] == ' '):
+                            self.state.guesses[self.state.attempt][index] = {self.board.letter_pool.sprites().index(letter) : hint}
+                            letter.transition_speed = letter.transition_speed//4
+                            letter.transition_snap = letter.transition_snap//4
+                            letter.emulated_click()
+                            letter.translate(vec2(tilesize.x*index, 100+(self.state.attempt*tilesize.y)))
+                            # letter.lock = True
+                            self.board.letter_used.add(letter)   
+                            self.board.letter_hints.add(letter)
+                            self.board.click = False
+                            break
     def win(self):
         if self.state.win:
             print("Congratulations")
-            self.score += 10
-            self.score += self.state.get_guess_attempts() * 5
-            self.board.ai.score -= 5
+            self.score += WORD_GUESSED_REWARD
+            self.score += self.state.get_guess_attempts() * ATTEMPTS_REWARD
+            self.board.ai.score -= WORD_GUESSED_PENALTY
             self.end()
 
     def lose(self):
         if self.state.get_guess_attempts() == 0 and not self.state.win:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.score -= 10
-            self.board.ai.score += 5
+            self.score -= NO_GUESS_PENALTY
+            self.board.ai.score += NO_GUESS_REWARD
             self.board.display_correct_word()
             self.end()
 
     def giveup(self):
         if self.board.turn and self.board.mode:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.score -= 5
-            self.board.ai.score += 10
+            self.score -= NO_GUESS_REWARD
+            self.board.ai.score += NO_GUESS_REWARD
             self.board.display_correct_word()
             self.end()
 

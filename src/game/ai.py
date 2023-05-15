@@ -59,16 +59,16 @@ class AI():
     def cb_lost(self):
         if self.state.get_guess_attempts() == 0 and not self.state.win:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.score -= 10
-            self.board.player.score += 5
+            self.score -= NO_GUESS_PENALTY
+            self.board.player.score += NO_GUESS_REWARD
             self.cb_end()
 
     def cb_win(self):
         if self.state.win:
             print("Congratulations")
-            self.score += 10
-            self.score += self.state.get_guess_attempts() * 5
-            self.board.player.score -= 5
+            self.score += WORD_GUESSED_REWARD
+            self.score += self.state.get_guess_attempts() * ATTEMPTS_REWARD
+            self.board.player.score -= WORD_GUESSED_PENALTY
             self.cb_end()
 
     def cb_end(self):

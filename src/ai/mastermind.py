@@ -23,7 +23,11 @@ class Mastermind():
         
         # print(dict(sorted(self.candidates.items(), key=lambda x:x[1])))
         if len(self.candidates) != 0:
-            return min(self.candidates, key=self.candidates.get)
+            # return min(self.candidates, key=self.candidates.get)
+            # return max(self.candidates, key=self.candidates.get)
+            middle = len(self.candidates)//2
+            return list(self.candidates.keys())[middle]
+            return 
         return ""
     
     def convertWord(self):

@@ -154,7 +154,14 @@ class Board():
             if letter not in self.letter_used:
                 letter.fill = WHITE
                 letter.draw()
-        for letter in self.letter_hints.sprites() + self.correct_word.sprites():
+            if letter in self.letter_hints and letter in self.letter_used:
+                index = self.state.guesses[self.state.attempt].index({self.letter_pool.sprites().index(letter): letter.letter})
+                if self.state.hints[index]:
+                    if self.state.hints[index] == letter.letter:
+                        letter.fill = GREEN 
+                        letter.draw()
+
+        for letter in self.correct_word.sprites():
             letter.fill = GREEN
             letter.draw()
 
@@ -172,20 +179,38 @@ class Board():
             self.correct_word.empty()
             self.ai.word = self.ai.agent_mastermind.generateWord()
             self.pool_generator.mmWord = [letter for letter in self.ai.word]
-            self.pool = ''.join(self.pool_generator.letter_generate()['pool'])
+            self.pool = None
+            self.pool_generator.min = AI_WORD_POOL_DIFFICULTY
+            self.pool_generator.limit = 150
+            while self.pool == None:
+                generated = self.pool_generator.letter_generate()
+                if generated:
+                    self.pool = ''.join(generated['pool'])
+                    print(generated['candidate words'])
+                    print(generated['word count'])
+                    del generated
             self.update_turn(self.pool)
             self.change_turn(turns.PCB)
             self.state.code_string = self.ai.word
             self.phase += 1
             print("Begin! now Player Codebreaker")
+
         if self.turn and self.mode:
             if self.state.accept_guess():
                 self.reset_pool()
+                self.player.get_hints()
         if self.turn and not self.mode:
             #PLAYER MASTERMIND
             if self.state.accept_code():
                 self.pool_generator.mmWord = [letter for letter in self.state.code_string]
-                self.pool = ''.join(self.pool_generator.letter_generate()['pool'])
+                self.pool = None
+                self.pool_generator.min = PLAYER_POOL_DIFFICULTY
+                self.pool_generator.limit = 5000
+                while self.pool == None:
+                    generated = self.pool_generator.letter_generate()
+                    if generated:
+                        self.pool = ''.join(generated['pool'])
+                        del generated
                 self.update_turn(self.pool)
 
                 #self.reset_pool()
