@@ -22,7 +22,7 @@ class AI():
         self.guess = ""
         self.guess_index = 0
         self.score = 0
-        self.speed = 5
+        self.speed = 15
         self.word = ""
 
         self.test = 0

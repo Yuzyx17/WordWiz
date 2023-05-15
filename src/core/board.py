@@ -29,7 +29,7 @@ class Board():
         self.time = 0
         self.round = 1
         self.phase = 0
-        self.max_round = 2
+        self.max_round = 1
 
         self.text_group = pg.sprite.Group()
         #MASTERMIND ALWAYS STARTS FIRST
@@ -43,9 +43,9 @@ class Board():
         self.correct_word = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
         
-        self.player_role = TextRenderer(vec2(200, 50))
+        self.player_role = TextRenderer(vec2(220, 100))
         self.player_role.rect.topleft = vec2(SIZE.x-self.player_role.rect.w, 0)
-        self.round_text = TextRenderer(vec2(100, 50), text=f"Round: {self.round}")
+        self.round_text = TextRenderer(vec2(175, 100), text=f"Round: {self.round}")
         self.round_text.rect.topleft = vec2(10, 0)
         self.scores = TextRenderer(vec2(150, 100))
         self.scores.rect.topleft = vec2(10, self.round_text.rect.y + 20 + self.round_text.rect.h)
@@ -98,6 +98,10 @@ class Board():
         self.round = 0
         self.ai.score = 0
         self.player.score = 0
+        self.round_text.rect.topleft = vec2(10, 0)
+        self.round_text.text = f"Round {self.round}"
+        self.round_text.fsize = 2
+        self.round_text.change = True
         self.start_init()
         self.text_group.add(self.wl)
         self.wl.change_text(f"{text}")
@@ -138,11 +142,12 @@ class Board():
             letter.rect.topleft = get_gus_pos(index, self.state.attempt-1)
             letter.fill = WHITE
             if self.state.hints[index] == char:
-                letter.fill = GREEN
+                letter.fill =  MILD_GREEN
             letter.draw()
             self.word_guessed.add(letter)
 
     def text_init(self):
+        
         self.text_group.add(self.player_role)
         self.text_group.add(self.scores)
         self.text_group.add(self.round_text)
@@ -201,15 +206,6 @@ class Board():
             self.letter_used.update()
             self.letter_hints.update()
             self.correct_word.update()
-            
-            if self.phase == 4:
-                self.phase = 0
-                self.round += 1
-                self.round_text.change_text(f'Round: {self.round}')
-            
-            if self.round > self.max_round:
-                self.round_text.change_text("GAME FINISHED!")
-                self.gen.change_text("FINISH GAME")
 
             if not self.turn and not self.mode:          
                 pass            
@@ -233,11 +229,11 @@ class Board():
         letter : Letter
         if self.state.verify_guess() and self.mode:
             for letter in self.letter_used:
-                letter.fill = GREEN
+                letter.fill =  MILD_GREEN
                 letter.draw()
         elif self.state.verify_code() and not self.mode:
             for letter in self.letter_used:
-                letter.fill = GREEN
+                letter.fill = MILD_GREEN
                 letter.draw()
         else:
             for letter in self.letter_used:
@@ -252,11 +248,11 @@ class Board():
                 index = self.state.guesses[self.state.attempt].index({self.letter_pool.sprites().index(letter): letter.letter})
                 if self.state.hints[index]:
                     if self.state.hints[index] == letter.letter:
-                        letter.fill = GREEN 
+                        letter.fill = MILD_GREEN
                         letter.draw()
 
         for letter in self.correct_word.sprites():
-            letter.fill = GREEN
+            letter.fill = YELLOW
             letter.draw()
 
     def ai_mm_init(self):
@@ -350,6 +346,21 @@ class Board():
                 self.gen.change_text("CONTINUE")
             case other:
                 raise("ERROR AWIT")
+        print(self.phase)
+        if self.phase == 5:
+            self.phase = 1
+            self.round += 1
+            self.round_text.change_text(f'Round: {self.round}')
+            
+            if self.round > self.max_round:
+                self.update_turn()
+                self.round_text.rect.topleft = vec2(SIZE.x//2-self.round_text.rect.w//2, 
+                                                    SIZE.y//2-self.round_text.rect.h//2)
+                self.round_text.fsize = 3
+                self.round_text.update()
+                self.round_text.change_text("GAME\nFINISHED!")
+                self.gen.change_text("FINISH GAME")
+        
 
     def events(self, event):
         if event.type == pg.KEYDOWN:

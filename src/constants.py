@@ -9,6 +9,7 @@ WHITE = Color(255, 255, 255)
 BLACK = Color(0, 0, 0)
 RED = Color(255, 0, 0)
 GREEN = Color(0, 255, 0)
+MILD_GREEN = Color(35, 220, 35)
 BLUE = Color(0, 0, 255)
 CYAN = BLUE + GREEN
 MAGENTA = RED + BLUE
