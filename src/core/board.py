@@ -9,6 +9,9 @@ from src.game.ai import AI
 from src.constants import *
 from src.utils.text import TextRenderer
 
+# ADD HERE
+from src.utils.text import TextRenderer
+
 class Board():
     def __init__(self, canvas):
         self.state = BoardState()
@@ -44,11 +47,50 @@ class Board():
         self.correct_word = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
 
+        # ADD HERE
+        self.question_text = pg.sprite.Group()
+        self.scores_record = pg.sprite.Group()
+        
+        self.player_role = pg.sprite.Group()
+        self.player_role_text = TextRenderer(vec2(100, 100))
+        self.player_role_text.rect.topleft = vec2(500, 20)
+
+
+        self.round_record = pg.sprite.Group()
+        self.round_text = TextRenderer(vec2(100, 100))
+        self.round_text.rect.topleft = vec2(500, 0)
+        self.round_text.change_text(f'Round: {self.round}')
+        self.round_record.add(self.round_text)
+
         self.start_init()
 
     def start_init(self):
         self.buttons.empty()
+        # interface for player to choose cb or mm
+        self.player_role_first_round()
+        
         self.game_init()
+
+    # STOP HERE
+    # if cb, then 
+    def player_role_first_round(self):
+        # self.question_text.empty()
+        text = TextRenderer(vec2(350, 100))
+        text.change_text("Your role in first round?")
+        text.rect.topleft = vec2(145, 100)
+        self.question_text.add(text)
+
+        cb_button = Button(vec2(150, 50), pg.Color(116,216,26))
+        cb_button.on_click(self.guess)
+        cb_button.set_text("Codebreaker")
+        cb_button.rect.topleft = vec2(100, 250)
+        self.buttons.add(cb_button)
+
+        mm_button = Button(vec2(150, 50), pg.Color(220,53,69))
+        mm_button.on_click(self.player.mastermind)
+        mm_button.set_text("Mastermind")
+        mm_button.rect.topleft = vec2(400, 250)
+        self.buttons.add(mm_button)
 
     def game_init(self):
         self.buttons.empty()
@@ -121,6 +163,10 @@ class Board():
         self.correct_word.draw(self.canvas)
         self.text_group.draw(self.canvas)
         self.buttons.draw(self.canvas)
+        self.question_text.draw(self.canvas) # ADD HERE
+        self.scores_record.draw(self.canvas) # ADD HERE
+        self.round_record.draw(self.canvas) # ADD HERE
+        self.player_role.draw(self.canvas) # ADD HERE
 
         self.letter_pool.update()
         self.letter_used.update()
@@ -128,11 +174,22 @@ class Board():
         self.correct_word.update()
         self.text_group.update()
         self.buttons.update(self.click)
+        self.question_text.update() # ADD HERE
+        self.scores_record.update() # ADD HERE
+        self.round_record.update() # ADD HERE
+        self.player_role.update() # ADD HERE
         
         if self.phase == 4:
             self.phase = 0
             self.round += 1
+<<<<<<< HEAD
             self.round_text.change_text(f"Round: {self.round}")
+=======
+            # ADD HERE
+            self.round_text.change_text(f'Round: {self.round}')
+            self.round_record.add(self.round_text)
+
+>>>>>>> eunice-wordwiz/master
             print(f'Round: {self.round}')
 
         if not self.turn and not self.mode:          
@@ -203,6 +260,11 @@ class Board():
             self.change_turn(turns.PCB)
             self.state.code_string = self.ai.word
             self.phase += 1
+
+            # ADD HERE
+            self.player_role.empty()
+            self.player_role_text.change_text("Codebreaker")
+            self.player_role.add(self.player_role_text)
             print("Begin! now Player Codebreaker")
 
         if self.turn and self.mode:
@@ -229,6 +291,11 @@ class Board():
                 self.phase += 1
                 self.ai.cb_init(self.pool)   
                 self.correct_word.empty()
+
+                # ADD HERE
+                self.player_role.empty()
+                self.player_role_text.change_text("Mastermind")
+                self.player_role.add(self.player_role_text)
                 print("Begin! now AI Codebreaker")
         if not self.turn and self.mode:
             ...
@@ -262,7 +329,12 @@ class Board():
                 raise("ERROR AWIT")
 
     def get_scores(self):
-        print(f'Player: {self.player.score}\nAI: {self.ai.score}')
+        self.scores_record.empty() # dat ko pa iempty yung sprite group neto?
+        text = TextRenderer(vec2(100, 100))
+        text.rect.topleft = vec2(500, 50)
+        text.change_text(f'Player: {self.player.score}\nAI: {self.ai.score}')
+        self.scores_record.add(text)
+        # print(f'Player: {self.player.score}\nAI: {self.ai.score}')
 
     def events(self, event):
         if self.turn and not self.mode:
