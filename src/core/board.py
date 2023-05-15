@@ -29,7 +29,7 @@ class Board():
         self.time = 0
         self.round = 1
         self.phase = 0
-        self.max_round = 1
+        self.max_round = 6
 
         self.text_group = pg.sprite.Group()
         #MASTERMIND ALWAYS STARTS FIRST
