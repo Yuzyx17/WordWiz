@@ -22,7 +22,7 @@ class AI():
         self.guess = ""
         self.guess_index = 0
         self.score = 0
-        self.speed = 2
+        self.speed = 5
         self.word = ""
 
         self.test = 0
@@ -37,24 +37,27 @@ class AI():
         self.agent_codebreaker = Codebreaker(self.trie, pool)
 
     def codebreaker(self):
+        
         if self.guess == "":
             self.guess = self.agent_codebreaker.think()
         letter: Letter
         for letter in self.board.letter_pool:         #for letters in the pool
-            if self.guess[self.guess_index] == letter.letter and letter not in self.board.letter_used:
-                attempted_index = self.board.letter_pool.sprites().index(letter)        
-                attempted_index = self.state.spell_guess(attempted_index, letter.letter)
-                letter.emulated_click()
-                letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
-                self.board.letter_used.add(letter)   
-                self.guess_index += 1
-                break
+            if self.guess:
+                if self.guess[self.guess_index] == letter.letter and letter not in self.board.letter_used:
+                    attempted_index = self.board.letter_pool.sprites().index(letter)        
+                    attempted_index = self.state.spell_guess(attempted_index, letter.letter)
+                    letter.emulated_click()
+                    # letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+                    letter.translate(get_gus_pos(attempted_index, self.state.attempt))
+                    self.board.letter_used.add(letter)   
+                    self.guess_index += 1
+                    break
         
         if self.state.accept_guess():
             self.update_codebreaker(self.state.hints) 
 
-        self.cb_win()
         self.cb_lost()
+        self.cb_win()
 
     def cb_lost(self):
         if self.state.get_guess_attempts() == 0 and not self.state.win:
@@ -73,8 +76,8 @@ class AI():
 
     def cb_end(self):
         # self.board.update_turn(self.board.pool)
+        self.board.display_correct_word()
         self.board.change_turn(turns.AMM)
-        self.board.phase += 1
         self.board.player.word = []
         # self.state.reset()
         print("Begin! now AI Mastermind")

@@ -29,7 +29,7 @@ class Board():
         self.time = 0
         self.round = 1
         self.phase = 0
-        self.max_round = 3
+        self.max_round = 2
 
         self.text_group = pg.sprite.Group()
         #MASTERMIND ALWAYS STARTS FIRST
@@ -43,16 +43,19 @@ class Board():
         self.correct_word = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
         
-        self.player_role = TextRenderer(vec2(100, 70), pos=vec2(520, 0))
-        self.round_text = TextRenderer(vec2(100, 50), pos=vec2(500, 50), text=f"Round: {self.round}")
-        self.scores = TextRenderer(vec2(100, 100), pos=vec2(500, 50))
+        self.player_role = TextRenderer(vec2(200, 50))
+        self.player_role.rect.topleft = vec2(SIZE.x-self.player_role.rect.w, 0)
+        self.round_text = TextRenderer(vec2(100, 50), text=f"Round: {self.round}")
+        self.round_text.rect.topleft = vec2(10, 0)
+        self.scores = TextRenderer(vec2(150, 100))
+        self.scores.rect.topleft = vec2(10, self.round_text.rect.y + 20 + self.round_text.rect.h)
 
         self.wl = TextRenderer(vec2(350, 100), pos=vec2(145, 340))
 
         self.gen = Button(vec2(150, 75), pg.Color(100, 150, 175))
         self.gen.on_click(self.guess)
         self.gen.set_text("")
-        self.gen.rect.topleft = vec2(375, 200)
+        self.gen.rect.topleft = vec2(SIZE.x - 10 - self.gen.rect.w, SIZE.y-10-self.gen.rect.h)
 
         self.input_key = ""
         self.start_init()
@@ -67,8 +70,8 @@ class Board():
         self.letter_used.empty()
         self.letter_hints.empty()
         self.state.reset()
-        text = TextRenderer(vec2(350, 100))
-        text.change_text("Your role in first round?")
+        text = TextRenderer(vec2(350, 100), font_size=2)
+        text.change_text("Your role?")
         text.rect.topleft = vec2(145, 100)
         self.text_group.add(text)
 
@@ -96,9 +99,9 @@ class Board():
         self.ai.score = 0
         self.player.score = 0
         self.start_init()
-        text = ""
-        self.wl.change_text(f"{text}")
         self.text_group.add(self.wl)
+        self.wl.change_text(f"{text}")
+        text = ""
         
 
     def game_init(self):
@@ -106,10 +109,10 @@ class Board():
         self.text_group.empty()
         self.start_game = True
 
-        res = Button(vec2(150, 75), pg.Color(250, 100, 125))
+        res = Button(vec2(150, 75), pg.Color(250, 30,25))
         res.on_click(self.player.giveup)
         res.set_text("Give Up")
-        res.rect.topleft = vec2(375, 300)
+        res.rect.topleft = vec2(10, SIZE.y-10-res.rect.h)
 
         self.buttons.add(self.gen)
         self.buttons.add(res)
@@ -131,7 +134,8 @@ class Board():
         for index in range(len(word)):
             char = word[index]
             letter = Letter(char)
-            letter.rect.topleft = vec2(tilesize.x*index, 100+((self.state.attempt-1)*tilesize.y))
+            # letter.rect.topleft = vec2(tilesize.x*index, 100+((self.state.attempt-1)*tilesize.y))
+            letter.rect.topleft = get_gus_pos(index, self.state.attempt-1)
             letter.fill = WHITE
             if self.state.hints[index] == char:
                 letter.fill = GREEN
@@ -159,11 +163,7 @@ class Board():
             self.ai.cb_init(self.pool)
 
         self.state.pool_string = pool
-        for i in range(10):
-            self.state.pool[i] = self.pool[i]
-            letter = Letter(self.state.pool[i])
-            letter.rect.x = i*tilesize.x
-            self.letter_pool.add(letter)
+        self.pool_init()
 
     #for each turn
     def reset_pool(self):
@@ -172,12 +172,16 @@ class Board():
         self.letter_pool.empty()
         self.letter_used.empty()
         self.letter_hints.empty()
+        self.pool_init()
 
+    def pool_init(self):
         for i in range(10):
             self.state.pool[i] = self.pool[i]
             letter = Letter(self.state.pool[i])
-            letter.rect.x = i*tilesize.x
-            self.letter_pool.add(letter)
+            # letter.rect.x = i*tilesize.x
+            letter.rect.topleft = get_pool_pos(i)
+            self.letter_pool.add(letter)    
+    
 
     def draw(self):
         self.text_group.draw(self.canvas)
@@ -202,6 +206,10 @@ class Board():
                 self.phase = 0
                 self.round += 1
                 self.round_text.change_text(f'Round: {self.round}')
+            
+            if self.round > self.max_round:
+                self.round_text.change_text("GAME FINISHED!")
+                self.gen.change_text("FINISH GAME")
 
             if not self.turn and not self.mode:          
                 pass            
@@ -270,7 +278,6 @@ class Board():
         self.update_turn(self.pool)
         self.change_turn(turns.PCB)
         self.state.code_string = self.ai.word
-        self.phase += 1
 
     def pl_mm_init(self):
         #PLAYER MASTERMIND
@@ -289,12 +296,11 @@ class Board():
             #self.reset_pool()
             self.change_turn(turns.ACB)
             self.state.code_string = ''.join(self.player.word)
-            self.phase += 1
             self.ai.cb_init(self.pool)   
             self.correct_word.empty()
 
     def guess(self): #This is attached to the button in wordwiz.py as a callback
-        if self.round == self.max_round:
+        if self.round > self.max_round:
             self.restart()
         if not self.turn and not self.mode:
             self.ai_mm_init()
@@ -310,8 +316,7 @@ class Board():
     def display_correct_word(self):
         for i in range(len(self.state.code_string)):
             letter = Letter(self.state.code_string[i])
-            letter.rect.x = i*tilesize.x
-            letter.rect.y = SIZE.y - tilesize.y
+            letter.rect.topleft = get_cor_pos(i)
             self.correct_word.add(letter)
 
     def update(self):
@@ -319,6 +324,7 @@ class Board():
 
     def change_turn(self, turn: turns):
         self.scores.change_text(f'Player: {self.player.score}\nAI: {self.ai.score}')
+        self.phase += 1
         match turn:
             case turns.PCB:
                 self.turn = True
@@ -351,15 +357,14 @@ class Board():
                         self.state.spell_code(len(self.player.word), event.unicode)
                         self.player.word.append(event.unicode)
                         letter = Letter(event.unicode)
-                        letter.rect.x = len(self.player.word)*tilesize.x
+                        # letter.rect.x = len(self.player.word)*tilesize.x
+                        letter.rect.topleft = get_cor_pos(len(self.player.word)-1)
                         self.letter_used.add(letter)
-                        print(self.state.code)
                 elif event.key == pg.K_BACKSPACE:
                     if len(self.player.word) > 0:
                         self.state.code[len(self.player.word)-1] = ' '
                         self.letter_used.remove(self.letter_used.sprites()[-1])
                         self.player.word.pop()
-                        print(self.state.code)
             if self.turn and self.mode:
                 if event.unicode.isalpha():
                     if self.spell:

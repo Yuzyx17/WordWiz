@@ -3,15 +3,17 @@ from pygame.math import Vector2 as vec2
 from src.constants import *
 
 class TextRenderer(pg.sprite.Sprite):
-    def __init__(self, size: vec2, pos: vec2 = vec2(0, 0), text="",color = BLACK):
+    def __init__(self, size: vec2, pos: vec2 = vec2(0, 0), text="",color = BLACK, font_size = 2):
         pg.sprite.Sprite.__init__(self)
         self.text = text
+        self.fsize = font_size
         self.change = True
         self.image = pg.Surface(size)
         self.rect = self.image.get_rect()
         self.image.fill(color)
         self.image.set_colorkey(color)
-        self.rect.topleft = pos
+        self.pos = pos
+        self.rect.topleft = self.pos
         self.color = color
         self.setVisible = True
 
@@ -21,7 +23,14 @@ class TextRenderer(pg.sprite.Sprite):
         # print(self.text)
         if self.change:
             self.image.fill(self.color)
-            text = pixelfont_sm.render(self.text, True, color)
+            if self.fsize == 1:
+                text = pixelfont_sm.render(self.text, True, color)
+            elif self.fsize == 2:
+                text = pixelfont_av.render(self.text, True, color)
+            elif self.fsize == 3:
+                text = pixelfont_md.render(self.text, True, color)
+            else:
+                text = pixelfont.render(self.text, True, color)
             text_rect = text.get_rect()
             text_rect.centerx = self.rect.w//2
             text_rect.centery = self.rect.h//2

@@ -29,7 +29,8 @@ class Player():
                     #Gets the FIRST empty slot from self.state.guesses[self.attempt]
                     attempted_index = self.state.spell_guess(attempted_index, letter.letter)
                     #Translate the position of the letter to the empty slot
-                    letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+                    # letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+                    letter.translate(get_gus_pos(attempted_index, self.state.attempt))
                     self.board.letter_used.add(letter)   
                     self.board.click = False
                     break
@@ -39,7 +40,7 @@ class Player():
                     attempted_index = self.state.spell_guess(attempted_index, letter.letter)
                     #Translate the position of the letter to the empty slot
                     letter.emulated_click()
-                    letter.translate(vec2(tilesize.x*attempted_index, 100+(self.state.attempt*tilesize.y)))
+                    letter.translate(get_gus_pos(attempted_index, self.state.attempt))
                     self.board.letter_used.add(letter)   
                     self.board.input_key = ""
                     break
@@ -49,7 +50,7 @@ class Player():
                 if letter.click(self.board.click):
                     #State update
                     attempted_index = self.board.letter_pool.sprites().index(letter)
-                    letter.translate(vec2(tilesize.x*attempted_index, 25))
+                    letter.translate(get_pool_pos(attempted_index))
                     self.state.undo_guess(attempted_index, letter.letter)
                     self.board.letter_used.remove(letter) 
                     self.board.click = False
@@ -63,7 +64,7 @@ class Player():
             letter = self.board.letter_pool.sprites()[attempted_index]
             if not letter.lock:
                 letter.emulated_click()
-                letter.translate(vec2(tilesize.x*attempted_index, 25))
+                letter.translate(get_pool_pos(attempted_index))
                 self.state.undo_guess(attempted_index, letter.letter)
                 self.board.letter_used.remove(letter) 
             self.board.input_key = ""
@@ -84,7 +85,7 @@ class Player():
                             letter.transition_speed = letter.transition_speed//3
                             letter.transition_snap = letter.transition_snap//3
                             letter.emulated_click()
-                            letter.translate(vec2(tilesize.x*index, 100+(self.state.attempt*tilesize.y)))
+                            letter.translate(get_gus_pos(index, self.state.attempt))
                             # letter.lock = True
                             self.board.letter_used.add(letter)   
                             self.board.letter_hints.add(letter)
@@ -108,7 +109,7 @@ class Player():
     def giveup(self):
         if self.board.turn and self.board.mode:
             print(f'YOU LOSE! word is {self.state.code_string}')
-            self.score += NO_GUESS_REWARD
+            self.score += NO_GUESS_PENALTY
             self.board.ai.score += NO_GUESS_REWARD
             self.end()
 
@@ -117,7 +118,6 @@ class Player():
         self.board.update_turn()
         self.board.ai.word = ""
         self.board.change_turn(turns.PMM)
-        self.board.phase += 1
         self.state.reset()
         print("Begin! now Player Mastermind")
 
