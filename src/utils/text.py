@@ -9,10 +9,18 @@ class TextRenderer(pg.sprite.Sprite):
         self.change = False
         self.image = pg.Surface(size)
         self.rect = self.image.get_rect()
+        self.image.fill(color)
+        self.image.set_colorkey(color)
+        self.color = color
+        self.setVisible = True
 
-    def update(self):
+    def update(self, color=(15, 15, 15)):
+        if not self.setVisible:
+            self.image.fill(self.color)
+        print(self.text)
         if self.change:
-            text = pixelfont_sm.render(self.text, True, BLACK)
+            self.image.fill(self.color)
+            text = pixelfont_sm.render(self.text, True, color)
             text_rect = text.get_rect()
             text_rect.centerx = self.rect.w//2
             text_rect.centery = self.rect.h//2

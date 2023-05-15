@@ -7,6 +7,7 @@ from src.utils.button import Button
 from src.utils.generator import LetterGenerator
 from src.game.ai import AI
 from src.constants import *
+from src.utils.text import TextRenderer
 
 class Board():
     def __init__(self, canvas):
@@ -26,6 +27,12 @@ class Board():
         self.round = 1
         self.phase = 0
 
+        self.round_text = TextRenderer(vec2(200, 50))
+        self.round_text.change_text(f"Round: {self.round}")
+        self.round_text.rect.x = SIZE.x//2 - self.round_text.rect.w//2
+
+        self.text_group = pg.sprite.Group()
+        self.text_group.add(self.round_text)
         #MASTERMIND ALWAYS STARTS FIRST
         self.turn = False #True = Player; False = AI
         self.mode = False #True = CB; False = MM #DEFAULT FALSE
@@ -112,17 +119,20 @@ class Board():
         self.letter_used.draw(self.canvas)      #drawing spell attempt
         self.letter_hints.draw(self.canvas)
         self.correct_word.draw(self.canvas)
+        self.text_group.draw(self.canvas)
         self.buttons.draw(self.canvas)
 
         self.letter_pool.update()
         self.letter_used.update()
         self.letter_hints.update()
         self.correct_word.update()
+        self.text_group.update()
         self.buttons.update(self.click)
         
         if self.phase == 4:
             self.phase = 0
             self.round += 1
+            self.round_text.change_text(f"Round: {self.round}")
             print(f'Round: {self.round}')
 
         if not self.turn and not self.mode:          
