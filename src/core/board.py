@@ -29,6 +29,7 @@ class Board():
         self.time = 0
         self.round = 1
         self.phase = 0
+        self.max_round = 3
 
         self.text_group = pg.sprite.Group()
         #MASTERMIND ALWAYS STARTS FIRST
@@ -51,6 +52,11 @@ class Board():
 
         self.scores = TextRenderer(vec2(100, 100))
         self.scores.rect.topleft = vec2(500, 50)
+
+        self.wl = TextRenderer(vec2(350, 100))
+        self.wl.change_text("Your role in first round?")
+        self.wl.rect.topleft = vec2(145, 340)
+        self.text_group.add(self.wl)
 
         self.gen = Button(vec2(150, 75), pg.Color(100, 150, 175))
         self.gen.on_click(self.guess)
@@ -80,6 +86,23 @@ class Board():
         mm_button.set_text("Mastermind")
         mm_button.rect.topleft = vec2(400, 250)
         self.buttons.add(mm_button)
+
+    def restart(self):
+        self.start_game = False
+        self.round = 0
+        self.ai.score = 0
+        self.player.score = 0
+        self.start_init()
+        text = ""
+        if self.ai.score > self.player.score:
+            text = f"AI WIN"
+        elif self.ai.score < self.player.score:
+            text = f"PLAYER WIN"
+        else:
+            text = "DRAW"
+        self.wl.change_text(f"{text}")
+        self.text_group.add(self.wl)
+        
 
     def game_init(self):
         self.buttons.empty()
@@ -275,9 +298,10 @@ class Board():
             self.correct_word.empty()
 
     def guess(self): #This is attached to the button in wordwiz.py as a callback
+        if self.round == self.max_round:
+            self.restart()
         if not self.turn and not self.mode:
             self.ai_mm_init()
-
         if self.turn and self.mode:
             if self.state.accept_guess():
                 self.reset_pool()
