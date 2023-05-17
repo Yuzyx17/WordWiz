@@ -42,7 +42,7 @@ class AI():
             self.guess = self.agent_codebreaker.think()
         letter: Letter
         for letter in self.board.letter_pool:         #for letters in the pool
-            if self.guess:
+            if self.guess != "":
                 if self.guess[self.guess_index] == letter.letter and letter not in self.board.letter_used:
                     attempted_index = self.board.letter_pool.sprites().index(letter)        
                     attempted_index = self.state.spell_guess(attempted_index, letter.letter)
