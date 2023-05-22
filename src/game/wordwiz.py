@@ -3,15 +3,16 @@ from pygame.constants import *
 
 from src.utils.cursor import Cursor
 from src.core.board import Board
-from src.utils.button import Button
 
 import pygame as pg
 import sys
 
 
 def init_game():
+    pg.mixer.pre_init()
+    pg.mixer.init()
     pg.init()
-    
+
     canvas = pg.display.set_mode(SIZE)
     pg.display.set_caption(TITLE)
     clock = pg.time.Clock()
@@ -22,7 +23,7 @@ def init_game():
     while True:
         canvas.fill(OFFWHITE)
         board.draw()
-
+        
         cursor.reset()
         board.click = False
         if board.turn:

@@ -11,7 +11,8 @@ class Letter(pg.sprite.Sprite):
         self.lock = False
         self.letter = char
         self.index = index
-
+        self.button_sound = pg.mixer.Channel(1)
+        self.button_player = pg.mixer.Sound(letsound)
         self.transition_speed = 60
         self.transition_snap = 30
         self.clicked = False
@@ -53,10 +54,14 @@ class Letter(pg.sprite.Sprite):
 
     def emulated_click(self):
         self.clicked = True
+        self.button_sound.set_volume(1.2)
+        self.button_sound.play(self.button_player)
         return self.clicked
 
     def click(self, clickable=False):
         if clickable and self.rect.collidepoint(pg.mouse.get_pos()) and not self.lock:
+            self.button_sound.set_volume(1.2)
+            self.button_sound.play(self.button_player)
             self.clicked = True
         return self.clicked
 

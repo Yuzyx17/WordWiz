@@ -33,6 +33,10 @@ pixelfont_md = ft(r'assets/font/pixelfont.ttf', int(tilesize.x)//2)
 pixelfont_av = ft(r'assets/font/pixelfont.ttf', int(tilesize.x)//3)
 pixelfont_sm = ft(r'assets/font/pixelfont.ttf', int(tilesize.x)//4)
 
+sound = r'assets/sfx/gamefx.wav'
+butsound = r'assets/sfx/button.wav'
+letsound = r'assets/sfx/letter.wav'
+
 alpha = 'abcdefghijklmnopqrstuvwxyz'
 
 WORD_GUESSED_PENALTY = -5

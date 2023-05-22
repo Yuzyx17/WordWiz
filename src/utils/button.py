@@ -11,7 +11,8 @@ class Button(pg.sprite.Sprite):
         self.list = None
         self.dict = None
         self.returnValue = None
-
+        self.button_sound = pg.mixer.Channel(1)
+        self.button_player = pg.mixer.Sound(butsound)
         self.click = False
         self.change = False
         self.text = ""
@@ -20,6 +21,8 @@ class Button(pg.sprite.Sprite):
     def update(self, click):
         self.click = click
         if self.click and self.rect.collidepoint(pg.mouse.get_pos()):
+            self.button_sound.set_volume(0.15)
+            self.button_sound.play(self.button_player)
             self.returnValue = self.callback(*self.list, **self.dict)
             self.click = False
         if self.change:

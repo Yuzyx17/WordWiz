@@ -22,6 +22,9 @@ class Board():
         self.start_game = False
         self.pool = ""
 
+        self.sound_channel = pg.mixer.Channel(0)
+        self.sound_player = pg.mixer.Sound(sound)
+
         self.player = Player(self)
         self.ai = AI(self)
         self.pool_generator = LetterGenerator(self.state.trie)
@@ -88,6 +91,7 @@ class Board():
         self.buttons.add(mm_button)
 
     def restart(self):
+        self.sound_channel.stop()
         self.start_game = False
         if self.ai.score > self.player.score:
             text = f"AI WIN"
@@ -103,7 +107,7 @@ class Board():
         self.player.score = 0
         self.round_text.rect.topleft = vec2(10, 0)
         self.round_text.text = f"Round {self.round}"
-        self.round_text.fsize = 2
+        self.round_text.fsize = 1
         self.round_text.change = True
         self.start_init()
         self.text_group.add(self.wl)
@@ -112,6 +116,8 @@ class Board():
         
 
     def game_init(self):
+        self.sound_channel.play(self.sound_player)
+        self.sound_channel.set_volume(0.2)
         self.buttons.empty()
         self.text_group.empty()
         self.start_game = True
@@ -126,6 +132,7 @@ class Board():
         self.text_init()
 
     def on_mm(self):
+        
         self.change_turn(turns.PMM)
         self.game_init()
         self.pl_mm_init()
