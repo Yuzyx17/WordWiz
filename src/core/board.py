@@ -23,6 +23,7 @@ class Board():
         self.pool = ""
 
         self.sound_channel = pg.mixer.Channel(0)
+        self.sound_channel.set_endevent(pg.USEREVENT + 2)
         self.sound_player = pg.mixer.Sound(sound)
 
         self.player = Player(self)
@@ -117,7 +118,7 @@ class Board():
 
     def game_init(self):
         self.sound_channel.play(self.sound_player)
-        self.sound_channel.set_volume(0.2)
+        self.sound_channel.set_volume(0.6)
         self.buttons.empty()
         self.text_group.empty()
         self.start_game = True
@@ -329,7 +330,8 @@ class Board():
             self.correct_word.add(letter)
 
     def update(self):
-        ...
+        if pg.event.peek(pg.USEREVENT + 2):
+            self.sound_channel.play(self.sound_player)
 
     def change_turn(self, turn: turns):
         self.scores.change_text(f'Player: {self.player.score}\nAI: {self.ai.score}')
@@ -397,3 +399,4 @@ class Board():
                     self.input_key = None
             if event.key == pg.K_RETURN:
                 self.guess()
+            
