@@ -54,14 +54,16 @@ class Letter(pg.sprite.Sprite):
 
     def emulated_click(self):
         self.clicked = True
+        self.play_sound()
+        return self.clicked
+    
+    def play_sound(self):
         self.button_sound.set_volume(1.2)
         self.button_sound.play(self.button_player)
-        return self.clicked
-
+        
     def click(self, clickable=False):
         if clickable and self.rect.collidepoint(pg.mouse.get_pos()) and not self.lock:
-            self.button_sound.set_volume(1.2)
-            self.button_sound.play(self.button_player)
+            self.play_sound()
             self.clicked = True
         return self.clicked
 

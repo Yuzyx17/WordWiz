@@ -388,6 +388,7 @@ class Board():
                         self.state.spell_code(len(self.player.word), event.unicode)
                         self.player.word.append(event.unicode)
                         letter = Letter(event.unicode)
+                        letter.play_sound()
                         # letter.rect.x = len(self.player.word)*tilesize.x
                         letter.rect.topleft = get_cor_pos(len(self.player.word)-1)
                         self.letter_used.add(letter)
