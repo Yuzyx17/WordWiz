@@ -19,9 +19,7 @@ class Mastermind():
             self.candidates[word] += rd.randint(1, 5) * rd.randint(-3, 3)
 
         if len(self.candidates) != 0:
-            middle = len(self.candidates)//2
-            return list(self.candidates.keys())[middle]
-            return 
+            return min(self.candidates, key=self.candidates.get)
         return ""
     
     def convertWord(self):
