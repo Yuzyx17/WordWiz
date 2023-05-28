@@ -61,14 +61,14 @@ class AI():
 
     def cb_lost(self):
         if self.state.get_guess_attempts() == 0 and not self.state.win:
-            print(f'YOU LOSE! word is {self.state.code_string}')
+            # print(f'YOU LOSE! word is {self.state.code_string}')
             self.score += NO_GUESS_PENALTY
             self.board.player.score += NO_GUESS_REWARD
             self.cb_end()
 
     def cb_win(self):
         if self.state.win:
-            print("Congratulations")
+            # print("Congratulations")
             self.score += WORD_GUESSED_REWARD
             self.score += self.state.get_guess_attempts() * ATTEMPTS_REWARD
             self.board.player.score += WORD_GUESSED_PENALTY
@@ -80,7 +80,7 @@ class AI():
         self.board.change_turn(turns.AMM)
         self.board.player.word = []
         # self.state.reset()
-        print("Begin! now AI Mastermind")
+        # print("Begin! now AI Mastermind")
         
     def update_codebreaker(self, hints):
         self.board.reset_pool()

@@ -42,8 +42,6 @@ class Codebreaker():
         print()
 
     def search(self, node: TrieNode = None, depth=0):
-        # self.getSampleStats(node)
-        used = False
         if depth >= 5:
             return
         for letter in rd.sample(self.pool, len(self.pool)):
@@ -52,18 +50,6 @@ class Codebreaker():
                     continue 
             if len(self.candidates) == self.max_candidates:
                 return
-            
-            # for word in self.attempts:
-            #     if word and self.hints[depth]:
-            #         if word[depth] == letter and self.hints[depth] != word[depth]:
-            #             used = True
-            #     else:
-            #         if word:
-            #             if word[depth] == letter:
-            #                 used = True
-            # if used:
-            #     used = False
-            #     continue
 
             self.word.append(letter)     
             current_node = node.nodes[getLetterIndex(letter)]

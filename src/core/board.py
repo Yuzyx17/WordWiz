@@ -8,7 +8,7 @@ from src.utils.generator import LetterGenerator
 from src.game.ai import AI
 from src.constants import *
 from src.utils.text import TextRenderer
-
+import random as rd
 # ADD HERE
 from src.utils.text import TextRenderer
 
@@ -33,7 +33,7 @@ class Board():
         self.time = 0
         self.round = 1
         self.phase = 0
-        self.max_round = 1
+        self.max_round = 6
 
         self.text_group = pg.sprite.Group()
         #MASTERMIND ALWAYS STARTS FIRST
@@ -230,7 +230,8 @@ class Board():
             elif self.turn and not self.mode:        
                 self.player.mastermind()            
             elif not self.turn and self.mode and self.time % self.ai.speed == 0 :    
-                self.time = 0                                   
+                self.time = 0
+                self.ai.speed = 30 - (len([n for n in self.state.hints.values() if n != None])*5)  
                 self.ai.codebreaker()        
 
             #TEMPORARY FEEDBACK
@@ -364,7 +365,7 @@ class Board():
                 self.gen.change_text("CONTINUE")
             case other:
                 raise("ERROR AWIT")
-        print(self.phase)
+        # print(self.phase)
         if self.phase == 5:
             self.phase = 1
             self.round += 1
@@ -404,5 +405,7 @@ class Board():
                 elif event.key == pg.K_BACKSPACE:
                     self.input_key = None
             if event.key == pg.K_RETURN:
+                self.gen.button_sound.set_volume(0.15)
+                self.gen.button_sound.play(self.gen.button_player)
                 self.guess()
             

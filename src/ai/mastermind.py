@@ -17,14 +17,8 @@ class Mastermind():
         self.search(self.node.nodes, 0)
         for word in self.candidates.keys():
             self.candidates[word] += rd.randint(1, 5) * rd.randint(-3, 3)
-            # stats = Counter(word)
-            # for values in stats.values():
-            #     self.candidates[word] *= values
-        
-        # print(dict(sorted(self.candidates.items(), key=lambda x:x[1])))
+
         if len(self.candidates) != 0:
-            # return min(self.candidates, key=self.candidates.get)
-            # return max(self.candidates, key=self.candidates.get)
             middle = len(self.candidates)//2
             return list(self.candidates.keys())[middle]
             return 
@@ -50,9 +44,7 @@ class Mastermind():
                     word = self.convertWord() 
                     if word not in self.candidates:
                         self.candidates[word] = self.globalScore
-                # self.pool_stack.append(self.pool.pop(self.pool.index(letter)))
                 self.search(current_node, depth+1)
-                # self.pool.append(self.pool_stack.pop(self.pool_stack.index(letter)))
             self.globalScore -= current_node.frequency() if current_node is not None else 0
             self.word.pop()
     

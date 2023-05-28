@@ -93,7 +93,7 @@ class Player():
                             break
     def win(self):
         if self.state.win:
-            print("Congratulations")
+            # print("Congratulations")
             self.score += WORD_GUESSED_REWARD
             self.score += self.state.get_guess_attempts() * ATTEMPTS_REWARD
             self.board.ai.score += WORD_GUESSED_PENALTY
@@ -101,14 +101,14 @@ class Player():
 
     def lose(self):
         if self.state.get_guess_attempts() == 0 and not self.state.win:
-            print(f'YOU LOSE! word is {self.state.code_string}')
+            # print(f'YOU LOSE! word is {self.state.code_string}')
             self.score += NO_GUESS_PENALTY
             self.board.ai.score += NO_GUESS_REWARD
             self.end()
 
     def giveup(self):
         if self.board.turn and self.board.mode:
-            print(f'YOU LOSE! word is {self.state.code_string}')
+            # print(f'YOU LOSE! word is {self.state.code_string}')
             self.score += NO_GUESS_PENALTY
             self.board.ai.score += NO_GUESS_REWARD
             self.end()
@@ -119,7 +119,7 @@ class Player():
         self.board.ai.word = ""
         self.board.change_turn(turns.PMM)
         self.state.reset()
-        print("Begin! now Player Mastermind")
+        # print("Begin! now Player Mastermind")
 
     def mastermind(self):
         self.board.spell = self.state.can_spell_code() 
