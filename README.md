@@ -3,7 +3,7 @@
 This game is insprired of both wordle and codebreaker. We combined the general idea of both games to create WordWiz
 In this game
 
-![alt text](assets\img\1.png)
+![assets\img\1.png](https://github.com/Yuzyx17/WordWiz/blob/master/assets/img/1.png?raw=true)
 
 You can either play as a codebreaker or a mastermind
 
@@ -18,14 +18,14 @@ You can either play as a codebreaker or a mastermind
 1. You have to guess the word within five tries
 2. Each time you make a guess, the correct letters will be saved
 
-![alt text](assets\img\3.png)
-![alt text](assets\img\4.png)
+![assets\img\3.png](https://github.com/Yuzyx17/WordWiz/blob/master/assets/img/3.png?raw=true)
+![assets\img\4.png](https://github.com/Yuzyx17/WordWiz/blob/master/assets/img/4.png?raw=true)
 
 #### Mastermind
 
 1. Give the Enemy a hard word and watch him guess it.
 
-![alt text](assets\img\5.png)
+![assets\img\5.png](https://github.com/Yuzyx17/WordWiz/blob/master/assets/img/5.png?raw=true)
 
 ### This project is made for our Artificial Intelligence class
 
@@ -33,7 +33,7 @@ This game was made as an entry for our project in our AI class. The AI develop h
 
 It uses a trie structure to store all the possible words in a dictionary, since the word are only five letter long, this is easily one of the best option to store the dictionary.
 
-![alt text](assets\img\7.png)
+![assets\img\7.png](https://github.com/Yuzyx17/WordWiz/blob/master/assets/img/7.png?raw=true)
 
 Another benefit of trie is it's ability to cater our chosen AI algorithm, the very simple **Depth First Search**. It works by continously searching the tree, it is quite simple as the trie already terminates branches that does not contain any letters that would create a word.
 
